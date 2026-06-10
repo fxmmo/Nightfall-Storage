@@ -1,0 +1,799 @@
+local Wind
+local link = "https://raw.githubusercontent.com/Footagesus/WindUI/main/dist/main.lua"
+
+local success, result = pcall(function()
+    return loadstring(game:HttpGet(link))()
+end)
+
+if success then
+    Wind = result
+else
+    error("Erro: " .. tostring(result))
+end
+
+local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Stats = game:GetService("Stats")
+local TweenService = game:GetService("TweenService")
+local HttpService = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+local PhysicsService = game:GetService("PhysicsService")
+local SoundService = game:GetService("SoundService")
+local CollectionService = game:GetService("CollectionService")
+local MarketplaceService = game:GetService("MarketplaceService")
+local UserInputService = game:GetService("UserInputService")
+local GuiService = game:GetService("GuiService")
+
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+local Settings = {
+    Player = {
+        walkspeedEnabled = false,
+        walkspeedValue = 60,
+        noclipEnabled = false,
+        antiJumpCooldown = false,
+        originalZoom = nil,
+        InfDoublejumpEnabled = false,
+        FastCrawl = false,
+        CrawlSpeed = 16,
+        fovValue = 70,
+        fovEnabled = false,
+    },
+
+    Auto = {
+        autoInteract = false,
+        autoSalveCaptured = false,
+        autoCrawlEnabled = false,
+        slowBeastEnabled = false,
+        unTieEnabled = false,
+        SpamBeastPower = false,
+        antiRagdollEnabled = false,
+        antiPcError = false,
+    },
+
+    Visual = {
+        espBeast = false,
+        espSurvivors = false,
+        espEveryone = false,
+        espComputer = false,
+        espCapsule = false,
+        espExitDoor = false,
+        espTransparency = 0.8,
+        clearAllHighlights = false,
+        highlightEnabled = false,
+        effectEnabled = true,
+    },
+
+    Combat = {
+        auraEnabled = false,
+        auraDistance = 20,
+        hitboxEnabled = false,
+        hitboxSize = 10,
+        autoCapture = false,
+        autoTieEnabled = false,
+    },
+
+    Hub = {
+        EnabledNotifications = true,
+        NotifyVolume = 0.5,
+        effectEnabled = true,
+        WindowToggleTransparency = false,
+    },
+
+    Misc = {
+        running = true,
+        joined = false,
+        joinDiscord = false,
+        Device = "Unknown",
+    }
+}
+
+local Data = {
+  Game = {
+    CurrentMap = "",
+    BeastPower = ReplicatedStorage:FindFirstChild("CurrentPower"),
+    GameActive = ReplicatedStorage:FindFirstChild("IsGameActive") and ReplicatedStorage.IsGameActive.Value or false,
+    unTieValues = {},
+  },
+
+  Hub = {
+    DiscordAPI = "https://discord.com/api/v10/invites/fbza6EJz?with_counts=true&with_expiration=true",
+  }
+}
+
+local HighlightRegistry = {}
+local function applyHighlight(options)
+    options = options or {}
+
+    local target = options.target
+    if not target then return end
+
+    local name = options.name or "Highlight"
+    local color = options.color or Color3.new(1, 1, 1)
+    local group = options.group or "Default"
+
+    HighlightRegistry[group] = HighlightRegistry[group] or {}
+
+    local h = target:FindFirstChild(name)
+    if not h then
+        h = Instance.new("Highlight")
+        h.Name = name
+        h.Parent = target
+        table.insert(HighlightRegistry[group], h)
+    end
+
+    h.FillColor = color
+    h.OutlineColor = color
+    h.FillTransparency = options.fillTransparency or Settings.Visual.espTransparency or 0.8
+    h.OutlineTransparency = options.outlineTransparency or 0
+    h.Enabled = true
+    h.Adornee = target
+    return h
+end
+
+local function clearHighlight(group)
+    local reg = HighlightRegistry[group]
+    if not reg then return end
+
+    for i = #reg, 1, -1 do
+        local h = reg[i]
+        if h and h.Parent then
+            h:Destroy()
+        end
+        reg[i] = nil
+    end
+end
+
+function randomString(length)
+    local charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    local result = ""
+    for i = 1, length do
+        result = result .. string.sub(charset, math.random(1, #charset), math.random(1, #charset))
+    end
+    return result
+end
+
+local function Notify(options)
+    options = options or {}
+
+    local title = options.Title or "Night Helper"
+    local content = options.Content or "Without Content"
+    local duration = options.Duration or 2
+    local icon = options.Icon or "solar:bell-bold"
+    local soundType = options.SoundType
+
+    local function PlayNotifySound(soundType)
+        local sound = Instance.new("Sound")
+        local sounds = {
+            default = "rbxassetid://18886652611",
+            error = "rbxassetid://17208372272"
+        }
+
+        sound.SoundId = sounds[soundType] or sounds.default
+        sound.Volume = Settings.Hub.NotifyVolume
+        sound.Parent = SoundService
+        sound:Play()
+
+        sound.Ended:Connect(function()
+            sound:Destroy()
+        end)
+    end
+
+    if Settings.Hub.EnabledNotifications then
+        PlayNotifySound(soundType)
+        Wind:Notify({
+            Title = title,
+            Content = content,
+            Duration = duration,
+            Icon = icon
+        })
+    end
+end
+
+local function getCurrentMap()
+  local mapValue = ReplicatedStorage.CurrentMap
+  local function updateCurrentMap()
+    Data.Game.CurrentMap = tostring(mapValue.Value)
+  end
+  
+  updateCurrentMap()
+  mapValue.Changed:Connect(updateCurrentMap)
+end
+getCurrentMap()
+
+local function getDeviceType()
+	if GuiService:IsTenFootInterface() then
+		return "Console"
+	end
+	
+	if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
+		local screenSize = workspace.CurrentCamera.ViewportSize
+		if screenSize.X > 1000 or screenSize.Y > 700 then
+			return "Tablet"
+		else
+			return "Mobile"
+		end
+	end
+	
+	if UserInputService.KeyboardEnabled and UserInputService.MouseEnabled then
+		return "PC"
+	end
+	
+	return "Unknown"
+end
+
+Settings.Misc.Device = getDeviceType()
+local CONFIG_FOLDER = "Nightfall"
+local CONFIG_FILE = CONFIG_FOLDER .. "/Settings/Flee-The-Facility/config.json"
+
+local function ensureFolder()
+    if isfolder and makefolder then
+        if not isfolder(CONFIG_FOLDER) then
+            makefolder(CONFIG_FOLDER)
+        end
+    end
+end
+
+local function serializeSettings()
+    return {
+        Player = Settings.Player,
+        Auto = Settings.Auto,
+        Visual = Settings.Visual,
+        Combat = Settings.Combat,
+        Hub = Settings.Hub,
+        Misc = Settings.Misc,
+    }
+end
+
+local function applySettings(data)
+    if type(data) ~= "table" then return end
+
+    for sectionName, sectionData in pairs(data) do
+        if type(sectionData) == "table" and type(Settings[sectionName]) == "table" then
+            for key, value in pairs(sectionData) do
+                Settings[sectionName][key] = value
+            end
+        end
+    end
+end
+
+local function saveConfig()
+    ensureFolder()
+
+    local data = serializeSettings()
+    local encoded = HttpService:JSONEncode(data)
+
+    if writefile then
+        writefile(CONFIG_FILE, encoded)
+        return true
+    end
+
+    return false
+end
+
+local function loadConfig()
+    if isfile and isfile(CONFIG_FILE) and readfile then
+        local success, decoded = pcall(function()
+            return HttpService:JSONDecode(readfile(CONFIG_FILE))
+        end)
+
+        if success and type(decoded) == "table" then
+            applySettings(decoded)
+            return true
+        end
+    end
+
+    return false
+end
+
+local function IsJoined()
+    local Configs = loadConfig()
+    
+    if not Configs or not Settings.Misc.joined then
+        Settings.Misc.joined = true
+        saveConfig()
+        
+        Notify({
+            Title = "Welcome! " ..LocalPlayer.DisplayName,
+            Content = "loanding...",
+            Duration = 5,
+            Icon = "solar:star-bold",
+            SoundType = "default"
+        })
+        
+        task.wait(2)
+        return false
+    else
+        Notify({
+            Title = "Welcome back!",
+            Content = "loanding...",
+            Duration = 5,
+            Icon = "solar:user-check-bold",
+            SoundType = "default"
+        })
+        
+        return true
+    end
+end
+
+IsJoined()
+--Theme
+Wind:AddTheme({
+    Name = "Nightfall_Theme",
+    Accent = Color3.fromHex("#7c3aed"),
+    Background = Wind:Gradient({
+        ["0"]   = { Color = Color3.fromHex("#0f0c29") },
+        ["50"]  = { Color = Color3.fromHex("#1a1040") },
+        ["100"] = { Color = Color3.fromHex("#0d0d1a") },
+    }, {
+        Rotation = 135,
+    }),
+    Outline = Color3.fromHex("#7c3aed"),
+    Text = Color3.fromHex("#e2e8f0"),
+    Placeholder = Color3.fromHex("#6b7280"),
+    Button = Color3.fromHex("#4c1d95"),
+    Icon = Color3.fromHex("#a78bfa"),
+})
+
+local function CreateEffect()
+    local screen = PlayerGui:FindFirstChild("EffectOpenClose")
+    local blur = Lighting:FindFirstChild("EffectBlurr")
+
+    if screen then
+        screen.Enabled = true
+        local frame = screen:FindFirstChildOfClass("Frame")
+        if frame then
+            frame.BackgroundTransparency = 1
+            if blur then blur.Enabled = true end
+
+            local fadeIn = TweenService:Create(
+                frame,
+                TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {BackgroundTransparency = 0}
+            )
+            fadeIn:Play()
+            
+            local gradient = frame:FindFirstChildOfClass("UIGradient")
+            if gradient then
+                TweenService:Create(gradient, TweenInfo.new(150, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {Rotation = 360}):Play()
+            end
+        end
+        return screen
+    end
+
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "EffectOpenClose"
+    screenGui.IgnoreGuiInset = true
+    screenGui.DisplayOrder = 100
+    screenGui.Enabled = true
+    screenGui.Parent = PlayerGui
+
+    local frame = Instance.new("Frame")
+    frame.BackgroundColor3 = Color3.fromRGB(14, 7, 79)
+    frame.Size = UDim2.new(1, 0, 1, 0)
+    frame.BorderSizePixel = 0
+    frame.BackgroundTransparency = 1
+    frame.Parent = screenGui
+
+    local blur = Instance.new("BlurEffect")
+    blur.Size = 10
+    blur.Name = "EffectBlurr"
+    blur.Parent = Lighting
+    blur.Enabled = true
+
+    local gradient = Instance.new("UIGradient")
+    gradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(111, 111, 111)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
+    }
+    gradient.Transparency = NumberSequence.new{
+        NumberSequenceKeypoint.new(0, 0),
+        NumberSequenceKeypoint.new(1, 0.369)
+    }
+    gradient.Rotation = 0
+    gradient.Parent = frame
+
+    TweenService:Create(gradient, TweenInfo.new(150, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {Rotation = 360}):Play()
+
+    local fadeIn = TweenService:Create(
+        frame,
+        TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        {BackgroundTransparency = 0}
+    )
+    fadeIn:Play()
+
+    return screenGui
+end
+
+local function CloseEffect()
+    local screenGui = PlayerGui:FindFirstChild("EffectOpenClose")
+    
+    local blur = Lighting:FindFirstChild("EffectBlurr")
+    
+    if screenGui then
+        local frame = screenGui:FindFirstChild("Frame")
+        
+        if frame then
+            local fadeOutInfo = TweenInfo.new(
+                0.5,
+                Enum.EasingStyle.Quad,
+                Enum.EasingDirection.Out
+            )
+            
+            local fadeOut = TweenService:Create(
+                frame,
+                fadeOutInfo,
+                {BackgroundTransparency = 1}
+            )
+            
+            fadeOut.Completed:Connect(function()
+                screenGui.Enabled = false
+            end)
+            
+            fadeOut:Play()
+            
+            if blur then
+              blur.Enabled = false
+            end
+        else
+            screenGui.Enabled = false
+            print("No animation")
+        end
+    end
+end
+
+local gameName
+local success, info = pcall(function()
+	return MarketplaceService:GetProductInfo(game.PlaceId)
+end)
+
+if success and info then
+	gameName = info.Name
+else
+	warn("Error while trying to identify game name")
+end
+
+local function getPlayerNames(v)
+    local names = {}
+    for _, player in ipairs(Players:GetPlayers()) do
+        if v or player ~= LocalPlayer then
+            table.insert(names, player.Name)
+        end
+    end
+    return names
+end
+
+Players.PlayerAdded:Connect(getPlayerNames)
+Players.PlayerRemoving:Connect(getPlayerNames)
+
+local function getBeastCharacter(t)
+  local player = Players.LocalPlayer
+    for _, p in pairs(Players:GetPlayers()) do
+      
+      if p == player then
+        continue
+      end
+      
+        local stats = p:FindFirstChild("TempPlayerStatsModule")
+        if stats and stats:FindFirstChild("IsBeast") and stats.IsBeast.Value == true then
+            return p.Character
+        end
+        
+        if t and stats and stats:FindFirstChild("IsBeast") and
+        stats.IsBeast.Value == true then 
+          return p.Name
+        end
+    end
+    return nil
+end
+
+local function getImage(options)
+    local options = options or {}
+    local assetPath = options.path or "Nightfall/assets"
+    local name = options.name or "image.png"
+    local url = options.url
+    
+    if not url then
+        warn("URL não fornecida")
+        return nil
+    end
+    
+    local fullPath = assetPath .. "/" .. name
+    
+    if isfolder and makefolder and writefile and isfile and getcustomasset then
+        local success, result = pcall(function()
+            if not isfolder("") then
+                makefolder("")
+            end
+            
+            if not isfolder(assetPath) then
+                makefolder(assetPath)
+            end
+            
+            if not isfile(fullPath) then
+                local data = game:HttpGet(url)
+                writefile(fullPath, data)
+            end
+            
+            return getcustomasset(fullPath)
+        end)
+        
+        if success and result then
+            return result
+        end
+    end
+    
+    warn("Using url: " .. name)
+    return url
+end
+
+local logo = getImage({
+  path = "Nightfall/assets",
+  name = "nightfall_icon.png",
+  url = "https://raw.githubusercontent.com/fxmmo/Night-fall-Hub/refs/heads/main/Icon.png"
+})
+
+--Janela
+local Window = Wind:CreateWindow({
+    Title = "Nightfall",
+    Author = "By Jogorbx",
+    Folder = "Nightfall",
+    Icon = logo, 
+    IconSize = 27,
+    Theme = "Nightfall_Theme",
+    Transparent = false,
+    NewElements = true,
+    HideSearchBar = false,
+    User = {
+      Enabled = true,
+    },
+
+    OpenButton = { 
+      Enabled = true,
+      Title = "Nightfall",
+      Draggable = true,
+      StrokeThickness = 0,
+      OnlyIcon = false
+    }
+})
+CreateEffect()
+
+--tags
+Window:Tag({
+  Title = gameName,
+})
+
+Window:OnOpen(function()
+  if Settings.Hub.effectEnabled then
+    CreateEffect()
+  else 
+    CloseEffect()
+  end
+end)
+
+Window:OnClose(function() 
+  CloseEffect()
+  saveConfig()
+end)
+
+Window:OnDestroy(function()
+  saveConfig()
+  end)
+
+local Tabs = {
+  HomeTab = Window:Tab({
+    Title = "Home",
+    Icon = "solar:home-2-bold"
+  }),
+  
+  VisualTab = Window:Tab({
+    Title = "Visual",
+    Icon = "solar:eye-bold"
+  }),
+
+  AutoTab = Window:Tab({
+    Title = "Gameplay",
+    Icon = "solar:gamepad-bold"
+  }),
+
+  BeastTab = Window:Tab({
+    Title = "Beast",
+    Icon = "solar:shield-warning-bold"
+  }),
+
+  space1 = Window:Divider(),
+  
+  ConfigsTab = Window:Tab({
+    Title = "Settings",
+    Icon = "solar:settings-bold"
+  })
+}
+
+Tabs.HomeTab:Select()
+--Main
+local DiscordSec = Tabs.HomeTab:Section({
+  Title = "Discord",
+  Desc = "Join the nightfall discord server!",
+  Opened = true
+})
+
+local Homebtns = {
+  space = DiscordSec:Space(),
+  
+  paragraph1 = DiscordSec:Paragraph({
+    Title = "Nightfall Team",
+    Desc = "Join the community server",
+    Image = getImage({
+      name = "logo_with_background",
+      path = "Nightfall/assets",
+      url = "https://raw.githubusercontent.com/fxmmo/Night-fall-Hub/refs/heads/main/Nightfall_Thumbnail.png"
+    }),
+    ImageSize = 48,
+    Thumbnail = getImage({
+      name = "background",
+      path = "Nightfall/assets",
+      url = "https://raw.githubusercontent.com/fxmmo/Night-fall-Hub/refs/heads/main/Nightfall%20%5B46E5772%5D.png"
+    }),
+    Buttons = {
+      {
+        Title = "Copy link",
+        Icon = "link"
+      },
+    },
+  }),
+
+  space1 = Tabs.HomeTab:Divider()
+}
+
+local PlayerSec = Tabs.HomeTab:Section({
+  Title = "Profile",
+  Opened = true
+})
+
+local PlayerBtns = {
+  paragraph1 = PlayerSec:Paragraph({
+    Title = LocalPlayer.DisplayName,
+    Desc = "Name: " ..LocalPlayer.Name..
+    "\nUserId: "..tostring(LocalPlayer.UserId)..
+    "\nExecutor: " ..(identifyexecutor and identifyexecutor() or "Unknown").. 
+    "\nAccountAge: " ..tostring(LocalPlayer.AccountAge)..
+    "\nDevice: " ..Settings.Misc.Device
+  }),
+
+  divide1 = PlayerSec:Space()
+}
+
+
+--Visual
+local HighlightsSec = Tabs.VisualTab:Section({
+  Title = "Highlights",
+  Opened = true
+})
+
+local HighToggles = {
+  button1 = HighlightsSec:Toggle({
+    Title = "Everyone",
+    Value = Settings.Visual.espEveryone,
+    Callback = function(state)
+      Settings.Visual.espEveryone = state
+      saveConfig()
+    end
+  }),
+
+  button2 = HighlightsSec:Toggle({
+    Title = "Beast",
+    Value = Settings.Visual.espBeast,
+    Callback = function(state)
+      Settings.Visual.espBeast = state
+      saveConfig()
+    end
+  }),
+
+  button3 = HighlightsSec:Toggle({
+    Title = "Survivor",
+    Value = Settings.Visual.espSurvivors,
+    Callback = function(state)
+      Settings.Visual.espSurvivors = state
+      saveConfig()
+    end
+  }),
+
+  highspace = HighlightsSec:Space(),
+  
+  button4 = HighlightsSec:Toggle({
+    Title = "Computer",
+    Value = Settings.Visual.espComputer,
+    Callback = function(state)
+      Settings.Visual.espComputer = state
+      saveConfig()
+    end
+  }),
+
+  button5 = HighlightsSec:Toggle({
+    Title = "Capsule",
+    Value = Settings.Visual.espCapsule,
+    Callback = function(state)
+      Settings.Visual.espCapsule = state
+      saveConfig()
+    end
+  }),
+
+  button6 = HighlightsSec:Toggle({
+    Title = "Exit Door",
+    Value = Settings.Visual.espExitDoor,
+    Callback = function(state)
+      Settings.Visual.espExitDoor = state
+      saveConfig()
+    end
+  }),
+  
+  Space2 = HighlightsSec:Space(),
+  
+  button7 = HighlightsSec:Slider({
+    Title = "Highlight Transparency",
+    Desc = "Adjust the transparency of the highlight",
+    Value = {
+      Min = 0,
+      Max = 1,
+      Default = Settings.Visual.espTransparency,
+    },
+    Step = 0.1,
+    Callback = function(v)
+      Settings.Visual.espTransparency = v
+      saveConfig()
+    end
+  }),
+
+  divider = Tabs.VisualTab:Divider()
+}
+
+--Gameplay
+local AntiSec = Tabs.AutoTab:Section({
+  Title = "Features",
+  Opened = true
+})
+
+local AntiBtns = {
+  button1 = AntiSec:Toggle({
+    Title = "Anti Pc Error",
+    Desc = "Keeps you from making mistakes while hacking a computer",
+    Value = Settings.Auto.antiPcError,
+    Callback = function(state)
+      Settings.Auto.antiPcError = state
+      saveConfig()
+    end
+  }),
+
+  button2 = AntiSec:Toggle({
+    Title = "Anti Ragdoll",
+    Desc = "Prevents you from falling when hit",
+    Value = Settings.Auto.antiRagdollEnabled,
+    Callback = function(state)
+      Settings.Auto.antiRagdollEnabled = state
+      saveConfig()
+    end
+  }),
+
+  space1 = AntiSec:Space(),
+
+  button3 = AntiSec:Toggle({
+    Title = "Auto Interact",
+    Desc = "Interact with nearby triggers automatically",
+    Value = Settings.Auto.autoInteract,
+    Callback = function(state)
+      Settings.Auto.autoInteract = state
+      saveConfig()
+    end
+  }),
+
+  divider1 = Tabs.AutoTab:Divider()
+}
+
+local HelpSec = Tabs.AutoTab:Section({
+  Title = "Help",
+  Opened = true
+})
+
