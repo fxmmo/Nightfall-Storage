@@ -9,7 +9,7 @@ function Get:Image(v)
   local name = v.Name or "image.png"
   local path = v.Path or hub_assets
   local url = v.Url
-  local fullpath = path.. "/" ..name or hub_assets.. "/" ..name
+  local fullpath = path.. "/" ..name
   
   if not url then
     warn("'Url' not provided")
