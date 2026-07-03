@@ -47,4 +47,17 @@ function Get:Image(v)
   return result 
 end
 
+function Get:Video(v)
+  v = v or {}
+
+  local name = v.Name
+  local path = v.Path
+  local url = v.Url
+
+  if not url then
+    warn("'Url' not provided")
+    return false
+  end
+  --I'll finish this later
+end
 return Get
