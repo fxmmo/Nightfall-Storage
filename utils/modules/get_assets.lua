@@ -9,13 +9,14 @@ function Get:Image(v)
   local name = v.Name or "image.png"
   local path = v.Path or hub_assets
   local url = v.Url
-
   local fullpath = path.. "/" ..name or hub_assets.. "/" ..name
-  local data = game:HttpGet(url)
   
+  if not url then
     warn("'Url' not provided")
     return false
   end
+  
+  local data = game:HttpGet(url)
 
   if not (isfile and isfolder and makefolder and writefile and getcustomasset) then
     warn("Ur exploit ins't supported")
