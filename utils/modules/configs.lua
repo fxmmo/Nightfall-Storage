@@ -3,15 +3,22 @@ local hub_folder = 'Nightfall/settings'
 
 local System = {}
 
-function System.new()
-  if not (isfolder and makefolder) then
+function System.new(x)
+  x = x or {}
+  local path = x.Path
+  
+  if not (isfolder and isfile and makefolder and writefile) then
     return false
   end
 
   if not isfolder(hub_folder) then
     makefolder(hub_folder)
-    return true
+    return false
   end
+
+  if not isfile(path) then
+    writefile(path)
+    return true
 end
 
 function System:Load(y)
