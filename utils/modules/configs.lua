@@ -35,8 +35,13 @@ function System:Load(y)
 
   if ok and result then
     if typeof(result) ~= "table" then
+      print(`A table está em um formato não compativel, {result}`,)
       return false
     else
       dds = result
+      return true
     end
   end
+end
+
+return System
