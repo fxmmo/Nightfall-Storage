@@ -36,7 +36,7 @@ function Get:Image(v)
         writefile(fullpath, data)
       end
 
-      return tostring(getcustomasset(fullpath))
+      return getcustomasset(fullpath)
     end)
 
   if ok and result then
