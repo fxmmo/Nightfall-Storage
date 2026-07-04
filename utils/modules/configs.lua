@@ -14,3 +14,29 @@ function System.new()
   end
 end
 
+function System:Load(y)
+  y = y or {}
+  local name = y.Name 
+  local path = y.Path 
+
+  if not (name and path) then
+    return false
+  end
+
+  if not (isfile and isfolder) then
+    return false
+  end
+
+  local dds
+  local file_to_load = `{path}/{name}` or `{hub_folder}/{name}`
+  local ok, result = pcall(function()
+      return http:JSONDecode(readfile(file_to_load))
+    end)
+
+  if ok and result then
+    if typeof(result) ~= "Table" then
+      return false
+    else
+      dds = result
+    end
+  end
