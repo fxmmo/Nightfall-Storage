@@ -34,7 +34,7 @@ function System:Load(y)
     end)
 
   if ok and result then
-    if typeof(result) ~= "Table" then
+    if typeof(result) ~= "table" then
       return false
     else
       dds = result
