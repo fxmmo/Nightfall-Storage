@@ -12,3 +12,5 @@ function System.new()
     makefolder(hub_folder)
     return true
   end
+end
+
