@@ -15,8 +15,18 @@ function Get:Image(v)
     warn("'Url' not provided")
     return false
   end
-  
-  local data = game:HttpGet(url)
+
+  local data
+  local ok, err = pcall(function()
+      return game:HttpGet(url)
+    end)
+
+  if ok and err then
+    data = err
+  else
+    warn("Failed to load 'data': " ..tostring(err))
+    return false
+  end
 
   if not (isfile and isfolder and makefolder and writefile and getcustomasset) then
     warn("Ur exploit ins't supported")
