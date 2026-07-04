@@ -39,12 +39,11 @@ function Get:Image(v)
       return getcustomasset(fullpath)
     end)
 
-  if not ok then
-    warn("Incorrect or invalid url: " ..tostring(result))
-    return false
+  if ok and result then
+    return result
   end
 
-  return result 
+  return url
 end
 
 function Get:Video(v)
