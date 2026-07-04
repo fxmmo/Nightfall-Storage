@@ -19,6 +19,7 @@ function System.new(x)
   if not isfile(path) then
     writefile(path)
     return true
+  end
 end
 
 function System:Load(y)
@@ -34,7 +35,6 @@ function System:Load(y)
     return false
   end
 
-  local dds
   local file_to_load = `{path}/{name}` or `{hub_folder}/{name}`
   local ok, result = pcall(function()
       return http:JSONDecode(readfile(file_to_load))
@@ -45,10 +45,11 @@ function System:Load(y)
       print(`A table está em um formato não compativel, {result}`,)
       return false
     else
-      dds = result
-      return true
+      return result
     end
   end
+  
+  return false
 end
 
 return System
