@@ -11,7 +11,7 @@ function Get:Image(v)
   local url = v.Url
   local fullpath = path.. "/" ..name
   
-  if not url then
+  if not url or type(url) ~= "string" then
     warn("'Url' not provided")
     return false
   end
