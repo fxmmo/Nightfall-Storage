@@ -17,7 +17,7 @@ function System.new(x)
   end
 
   if not isfile(path) then
-    writefile(path)
+    writefile(path, "{}")
     return true
   end
 end
