@@ -2,6 +2,7 @@ local http = game:GetService("HttpService")
 local hub_folder = 'Nightfall/settings'
 
 local System = {}
+System.__index = System
 
 function System.new(x)
   x = x or {}
