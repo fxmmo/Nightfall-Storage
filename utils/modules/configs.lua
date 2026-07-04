@@ -3,7 +3,12 @@ local hub_folder = 'Nightfall/settings'
 
 local System = {}
 
-function System:Load(file)
-  file_to_load = `{hub_folder}/{file}`
-  
-  
+function System.new()
+  if not (isfolder and makefolder) then
+    return false
+  end
+
+  if not isfolder(hub_folder) then
+    makefolder(hub_folder)
+    return true
+  end
