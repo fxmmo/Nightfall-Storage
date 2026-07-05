@@ -7,7 +7,7 @@ function Dev:New(file_configs)
   local full_path = `{path}/{name}`
   
   if not (isfolder and isfile and makefolder and writefile) then
-    return
+    return false
   end
 
   local save_file = full_path
@@ -22,3 +22,5 @@ function Dev:New(file_configs)
   
   return full_path
 end
+
+return Dev
