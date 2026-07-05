@@ -16,7 +16,6 @@ function Dev:New(file_configs)
 
   if not isfolder(save_file) then
     makefolder(path)
-
     if not isfile(name) then
       writefile(full_path, "{}")
     end
