@@ -1,3 +1,5 @@
+local http = game:GetService("HttpService")
+
 local Dev = {}
 
 function Dev:New(file_configs)
@@ -21,6 +23,31 @@ function Dev:New(file_configs)
   end
   
   return full_path
+end
+
+function Dev:Save(file_name)
+  local name = file_name.Name 
+  local path = file_name.Path
+  local data = file_name.Data 
+
+  local full_path = `{path}/{name}`
+
+  if not full_path then
+    Dev:New({
+        Name = name,
+        Path = path
+    })
+  else
+    local dds 
+    local ok, result = pcall(function()
+        return http:JSONEncode(data)
+      end)
+
+    if ok and result then
+      dds = result 
+      writefile(full_path, dds)
+    end
+  end
 end
 
 return Dev
