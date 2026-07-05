@@ -32,7 +32,7 @@ function Dev:Save(file_name)
 
   local full_path = `{path}/{name}`
 
-  if not full_path then
+  if not isfolder(path) and not isfile(name) then
     Dev:New({
         Name = name,
         Path = path
