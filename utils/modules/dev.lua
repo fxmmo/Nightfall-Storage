@@ -1,7 +1,13 @@
 local http = game:GetService("HttpService")
 
-local function formatJsonString(str)
-  return str:gsub("%s+", "-"):gsub("^%-+", ""):gsub("%-+$", "") .. (str:match("%.json$") and "" or ".json")
+local function formatJsonString(str: string): string
+    str = str:gsub("^%s+", ""):gsub("%s+$", "")
+    str = str:gsub(" ", "-")
+    if not str:match("%.json$") then
+        str = str .. ".json"
+    end
+  
+    return str
 end
 
 local Dev = {}
