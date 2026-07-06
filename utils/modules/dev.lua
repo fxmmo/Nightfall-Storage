@@ -24,10 +24,10 @@ function Dev:New(file_configs)
   return full_path
 end
 
-function Dev:Save(file_name)
-  local name = file_name.Name 
-  local path = file_name.Path
-  local data = file_name.Data 
+function Dev:Save(x)
+  local name = x.Name 
+  local path = x.Path
+  local data = x.Data 
 
   local full_path = `{path}/{name}`
 
@@ -48,5 +48,13 @@ function Dev:Save(file_name)
     end
   end
 end
+
+function Dev:Load(y)
+  local name = y.Name 
+  local path = y.Path 
+
+  local full_path = `{path}/{name}`
+
+  
 
 return Dev
