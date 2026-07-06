@@ -63,7 +63,7 @@ function Dev:Load(y)
     return false
   end
 
-  if isfolder(path) and isfile(full_path) 
+  if isfolder(path) and isfile(full_path) then
     local sts
     local ok, result = pcall(function()
       return http:JSONDecode(readfile(full_path))
