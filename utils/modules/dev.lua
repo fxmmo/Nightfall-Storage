@@ -29,7 +29,7 @@ function Dev:Save(x)
   end
   
   if not isfolder(path) and not isfile(full_path) then
-    Dev:New({
+    self:New({
         Path = path
     })
     return true
