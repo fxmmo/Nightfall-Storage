@@ -73,9 +73,6 @@ function Dev:Load(y)
       sts = result
       return sts
     end
-  else
-    print(`{full_path} don't exist`)
-    return false
   end
 end
   
