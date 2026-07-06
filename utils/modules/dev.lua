@@ -1,23 +1,12 @@
 local http = game:GetService("HttpService")
 
-local function formatJsonString(str: string): string
-    str = str:gsub("^%s+", ""):gsub("%s+$", "")
-    str = str:gsub(" ", "-")
-    if not str:match("%.json$") then
-        str = str .. ".json"
-    end
-  
-    return str
-end
-
 local Dev = {}
 
 function Dev:New(file_configs)
   local name = file_configs.Name 
   local path = file_configs.Path 
   
-  local formated_name = formatJsonString(name)
-  local full_path = `{path}/{formated_name}`
+  local full_path = `{path}/{name}`
   
   if not (isfolder and isfile and makefolder and writefile) then
     return false
@@ -27,7 +16,7 @@ function Dev:New(file_configs)
 
   if not isfolder(save_file) then
     makefolder(path)
-    if not isfile(formated_name) then
+    if not isfile(name) then
       writefile(full_path, "{}")
     end
   end
@@ -40,12 +29,11 @@ function Dev:Save(file_name)
   local path = file_name.Path
   local data = file_name.Data 
 
-  local formated_name = formatJsonString(name)
   local full_path = `{path}/{name}`
 
-  if not isfolder(path) and not isfile(formated_name) then
+  if not isfolder(path) and not isfile(name) then
     Dev:New({
-        Name = formated_name,
+        Name = name,
         Path = path
     })
   else
