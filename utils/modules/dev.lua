@@ -1,4 +1,5 @@
 local http = game:GetService("HttpService")
+local _cache = {}
 
 local Dev = {}
 
@@ -69,11 +70,16 @@ function Dev:Load(y)
 end
 
 function Dev:Require(url)
+  if _cache[url] then 
+    return _cache[url]
+  end
+  
   local ok, result = pcall(function()
       return loadstring(game:HttpGet(url))
     end)
 
   if ok and result then
+    _cache[url] = result
     return result 
   end
 
