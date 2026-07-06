@@ -28,22 +28,24 @@ function Dev:Save(x)
     return false
   end
   
-  if not isfolder(path) and not isfile(name) then
+  if not isfolder(path) and not isfile(full_path) then
     Dev:New({
-        Name = name,
         Path = path
     })
-  else
-    local dds 
-    local ok, result = pcall(function()
-        return http:JSONEncode(data)
-      end)
-
-    if ok and result then
-      dds = result 
-      writefile(full_path, dds)
-    end
+    return true
   end
+  
+  local dds 
+  local ok, result = pcall(function()
+      return http:JSONEncode(data)
+    end)
+
+  if ok and result then
+    dds = result 
+    writefile(full_path, dds)
+  end
+
+  return false
 end
 
 function Dev:Load(y)
@@ -75,7 +77,7 @@ function Dev:Require(url)
   end
   
   local ok, result = pcall(function()
-      return loadstring(game:HttpGet(url))
+      return loadstring(game:HttpGet(url))()
     end)
 
   if ok and result then
