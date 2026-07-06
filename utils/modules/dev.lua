@@ -34,11 +34,12 @@ function Dev:Save(file_name)
   local path = file_name.Path
   local data = file_name.Data 
 
+  local formated_name = formatJsonString(name)
   local full_path = `{path}/{name}`
 
-  if not isfolder(path) and not isfile(name) then
+  if not isfolder(path) and not isfile(formated_name) then
     Dev:New({
-        Name = name,
+        Name = formated_name,
         Path = path
     })
   else
