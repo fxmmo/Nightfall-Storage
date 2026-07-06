@@ -67,5 +67,17 @@ function Dev:Load(y)
     end
   end
 end
-  
+
+function Dev:Require(z)
+  local ok, result = pcall(function()
+      return loadstring(game:HttpGet(z))
+    end)
+
+  if ok and result then
+    return result 
+  end
+
+  return nil
+end
+
 return Dev
