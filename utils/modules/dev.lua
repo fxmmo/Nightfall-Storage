@@ -3,12 +3,9 @@ local http = game:GetService("HttpService")
 local Dev = {}
 
 function Dev:New(file_configs)
-  local name = file_configs.Name 
   local path = file_configs.Path 
-  local data = file_configs.Data or {}
-  local full_path = `{path}/{name}`
   
-  if not (isfolder and isfile and makefolder and writefile) then
+  if not (isfolder and makefolder) then
     return false
   end
 
@@ -16,17 +13,7 @@ function Dev:New(file_configs)
     makefolder(path)
   end
   
-  if not isfile(full_path) then
-    local ok, encoded = pcall(function()
-      return http:JSONEncode(data)
-    end)
-    
-    if ok and encoded then
-      writefile(full_path, encoded)
-    end
-  end
-  
-  return full_path
+  return path
 end
 
 function Dev:Save(x)
