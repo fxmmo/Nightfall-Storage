@@ -68,9 +68,9 @@ function Dev:Load(y)
   end
 end
 
-function Dev:Require(z)
+function Dev:Require(url)
   local ok, result = pcall(function()
-      return loadstring(game:HttpGet(z))
+      return loadstring(game:HttpGet(url))
     end)
 
   if ok and result then
