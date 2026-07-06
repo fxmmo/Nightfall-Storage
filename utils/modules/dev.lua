@@ -31,6 +31,10 @@ function Dev:Save(x)
 
   local full_path = `{path}/{name}`
 
+  if not (isfolder and isfile and writefile) then
+    return false
+  end
+  
   if not isfolder(path) and not isfile(name) then
     Dev:New({
         Name = name,
@@ -55,6 +59,24 @@ function Dev:Load(y)
 
   local full_path = `{path}/{name}`
 
-  
+  if not (isfolder and isfile and readfile) then
+    return false
+  end
 
+  if isfolder(path) and isfile(full_path) 
+    local sts
+    local ok, result = pcall(function()
+      return http:JSONDecode(readfile(full_path))
+    end)
+
+    if ok and result then
+      sts = result
+      return sts
+    end
+  else
+    print(`{full_path} don't exist`)
+    return false
+  end
+end
+  
 return Dev
