@@ -99,7 +99,7 @@ function Dev:GetImage(image)
 
   if not isfolder(path) then
     Dev:New({
-        path
+        Path = path
       })
   end
 
