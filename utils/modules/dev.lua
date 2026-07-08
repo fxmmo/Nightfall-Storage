@@ -88,4 +88,37 @@ function Dev:Require(url)
   return nil
 end
 
+function Dev:GetImage(image)
+  local name = image.Name
+  local path = image.Path 
+  local url = image.Url 
+
+  if not (isfolder and isfile and writefile) then 
+    return false
+  end
+
+  if not isfolder(path) then
+    Dev:New({
+        path
+      })
+  end
+
+  local img
+  local ok, result = pcall(function()
+      return loadstring(game:HttpGet(url))()
+    end)
+
+  if ok and result then
+    writefile(`{path}{name}`, img)
+    return true 
+  end
+
+  if not ok then
+    readfile(`{path}{name}`)
+    return true
+  end
+  
+  return nil
+end
+  
 return Dev
