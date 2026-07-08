@@ -109,12 +109,12 @@ function Dev:GetImage(image)
     end)
 
   if ok and result then
-    writefile(`{path}{name}`, img)
+    writefile(`{path}/{name}`, img)
     return true 
   end
 
   if not ok then
-    readfile(`{path}{name}`)
+    readfile(`{path}/{name}`)
     return true
   end
   
