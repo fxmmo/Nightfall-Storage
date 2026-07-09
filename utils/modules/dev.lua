@@ -89,45 +89,36 @@ function Dev:Require(url)
 end
 
 function Dev:GetImage(image)
-  local name = image.Name
-  local path = image.Path 
-  local url = image.Url 
+  local name = image.Name or "image.png"
+  local path = image.Path or "Nightfall/assets"
+  local url = image.Url
+  local full_path = `{path}/{name}`
 
-  if not (isfolder and isfile and writefile) then 
+  if not url then
+    return false
+  end
+
+  if not (isfolder and isfile and writefile and getcustomasset) then
     return false
   end
 
   if not isfolder(path) then
-    Dev:New({
-        Path = path
-      })
+    Dev:New({ Path = path })
   end
 
   local ok, result = pcall(function()
-      return loadstring(game:HttpGet(url))()
-    end)
+    if not isfile(full_path) then
+      local data = game:HttpGet(url)
+      writefile(full_path, data)
+    end
+    return getcustomasset(full_path)
+  end)
 
   if ok and result then
-    writefile(`{path}/{name}`, result)
-
-    local bln, err = pcall(function()
-        return getcustomasset(readfile(result))
-      end)
-
-    if bln and err then
-      return err
-    else
-      return false
-    end
-    
-    return true
+    return result
   end
 
-  if not ok then
-    return loadstring(game:HttpGet(url))()
-  end
-  
-  return nil
+  return url
 end
-  
+
 return Dev
