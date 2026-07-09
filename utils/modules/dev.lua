@@ -110,11 +110,11 @@ function Dev:GetImage(image)
 
   if ok and result then
     writefile(`{path}/{name}`, img)
-    return true 
+    return true
   end
 
   if not ok then
-    readfile(`{path}/{name}`)
+    getcustomasset(`{path}/{name}`)
     return true
   end
   
