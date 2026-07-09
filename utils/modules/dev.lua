@@ -103,7 +103,7 @@ function Dev:GetImage(image)
   end
 
   if not isfolder(path) then
-    Dev:New({ Path = path })
+    Dev:New({Path = path})
   end
 
   local ok, result = pcall(function()
