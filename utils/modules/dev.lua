@@ -103,19 +103,28 @@ function Dev:GetImage(image)
       })
   end
 
-  local img
   local ok, result = pcall(function()
       return loadstring(game:HttpGet(url))()
     end)
 
   if ok and result then
-    writefile(`{path}/{name}`, img)
+    writefile(`{path}/{name}`, result)
+
+    local bln, err = pcall(function()
+        return getcustomasset(readfile(result))
+      end)
+
+    if bln and err then
+      return err
+    else
+      return false
+    end
+    
     return true
   end
 
   if not ok then
-    getcustomasset(`{path}/{name}`)
-    return true
+    return loadstring(game:HttpGet(url))()
   end
   
   return nil
