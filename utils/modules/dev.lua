@@ -129,4 +129,37 @@ function Dev:GetImage(image)
   return url
 end
 
+function Dev:GetVideo(video)
+  local name = video.Name or "video.mp4"
+  local path = video.Path or "Nightfall/assets"
+  local url = video.Url
+  local full_path = `{path}/{name}`
+
+  if not url then
+    return false
+  end
+
+  if not (isfolder and isfile and writefile and getcustomasset) then
+    return false
+  end
+
+  if not isfolder(path) then
+    Dev:Int({Paths = {{Path = path}}})
+  end
+
+  local ok, result = pcall(function()
+    if not isfile(full_path) then
+      local data = game:HttpGet(url)
+      writefile(full_path, data)
+    end
+    return getcustomasset(full_path)
+  end)
+
+  if ok and result then
+    return result
+  end
+
+  return url
+end
+
 return Dev
