@@ -1,3 +1,5 @@
+local Theme = {}
+
 Wind:AddTheme({
     Name = "nightfall-default-theme",
 
@@ -109,3 +111,5 @@ Wind:AddTheme({
     LabelBackground = Color3.fromHex("#1a1040"),
     LabelBackgroundTransparency = .90,
 })
+
+return Theme
