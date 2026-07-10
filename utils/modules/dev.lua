@@ -136,7 +136,6 @@ function Dev:GetVideo(video)
   local full_path = `{path}/{name}`
 
   if not (isfolder and isfile and writefile and getcustomasset) then
-    warn("Ur exploit isn't supported")
     return false
   end
 
