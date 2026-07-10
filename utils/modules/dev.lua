@@ -6,18 +6,23 @@ local Dev = {}
 function Dev:Int(file_configs)
   local paths = file_configs.Paths
   
-  for _, item in ipairs(paths) do 
-    if not (isfolder and makefolder) then
-      return false
-    end 
-
-    if not isfolder(item.Path) then
-      makefolder(item.Path)
-      return true
-    end
-    
+  if not (isfolder and makefolder) then
     return false
   end
+
+  for _, item in ipairs(paths) do
+    local parts = item.Path:split("/")
+    local current = ""
+    
+    for _, part in ipairs(parts) do
+      current = current == "" and part or (current .. "/" .. part)
+      if not isfolder(current) then
+        makefolder(current)
+      end
+    end
+  end
+
+  return true
 end
 
 function Dev:Save(x)
