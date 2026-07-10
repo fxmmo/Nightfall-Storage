@@ -136,6 +136,7 @@ function Dev:GetVideo(video)
   local full_path = `{path}/{name}`
 
   if not (isfolder and isfile and writefile and getcustomasset) then
+    warn("Ur exploit isn't supported")
     return false
   end
 
@@ -145,6 +146,9 @@ function Dev:GetVideo(video)
 
   local ok, result = pcall(function()
     if not isfile(full_path) then
+      if not url then
+        return false
+      end
       local data = game:HttpGet(url)
       writefile(full_path, data)
     end
@@ -153,6 +157,10 @@ function Dev:GetVideo(video)
 
   if ok and result then
     return result
+  end
+
+  if not url then
+    return false
   end
 
   return url
