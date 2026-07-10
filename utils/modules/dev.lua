@@ -3,15 +3,20 @@ local _cache = {}
 
 local Dev = {}
 
-function Dev:New(file_configs)
-  local path = file_configs.Path 
+function Dev:Int(file_configs)
+  local paths = file_configs.Paths
   
-  if not (isfolder and makefolder) then
-    return false
-  end
+  for _, p in pairs(paths) do 
+    if not (isfolder and makefolder) then
+      return false
+    end 
 
-  if not isfolder(path) then
-    makefolder(path)
+    if not isfolder(p) then
+      makefolder(p)
+      return true
+    end
+    
+    return false
   end
   
   return path
