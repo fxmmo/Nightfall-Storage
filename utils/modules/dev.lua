@@ -135,10 +135,6 @@ function Dev:GetVideo(video)
   local url = video.Url
   local full_path = `{path}/{name}`
 
-  if not url then
-    return false
-  end
-
   if not (isfolder and isfile and writefile and getcustomasset) then
     return false
   end
