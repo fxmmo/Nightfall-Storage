@@ -6,7 +6,7 @@ local Dev = {}
 function Dev:Int(file_configs)
   local paths = file_configs.Paths
   
-  for _, p in pairs(paths) do 
+  for _, p in pairs(paths:GetChildren()) do 
     if not (isfolder and makefolder) then
       return false
     end 
