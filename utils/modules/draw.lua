@@ -92,4 +92,59 @@ function Draw:Remove(obj)
     end
 end
 
+function Draw:Tracer(target, options)
+    options = options or {}
+
+    local camera = workspace.CurrentCamera
+    local runService = game:GetService("RunService")
+
+    local line = Drawing.new("Line")
+    line.Visible = false
+    line.Color = options.Color or Color3.fromRGB(255, 255, 255)
+    line.Thickness = options.Thickness or 1
+    line.Transparency = options.Transparency or 1
+
+    local basePosition = options.From or Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y)
+
+    local connection
+    connection = runService.RenderStepped:Connect(function()
+        if not target or not target.Parent then
+            line.Visible = false
+            if connection then
+                connection:Disconnect()
+            end
+            return
+        end
+
+        local part = target
+        if target:IsA("Model") then
+            part = target:FindFirstChild("HumanoidRootPart") or target.PrimaryPart
+        end
+
+        if not part then
+            line.Visible = false
+            return
+        end
+
+        local pos, onScreen = camera:WorldToViewportPoint(part.Position)
+
+        if onScreen then
+            line.From = basePosition
+            line.To = Vector2.new(pos.X, pos.Y)
+            line.Visible = true
+        else
+            line.Visible = false
+        end
+    end)
+
+    function line:Destroy()
+        if connection then
+            connection:Disconnect()
+        end
+        self:Remove()
+    end
+
+    return line
+end
+
 return Draw
