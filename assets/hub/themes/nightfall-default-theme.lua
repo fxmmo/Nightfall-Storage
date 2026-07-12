@@ -45,7 +45,7 @@ Theme.Night = {
 
     ElementBackground = Color3.fromHex("#e2e8f0"),
     ElementBackgroundTransparency = .93,
-    ElementBackgroundHover = Wind.Creator:AddColor("ElementBackground", "#a78bfa", 1/10),
+    --ElementBackgroundHover = Wind.Creator:AddColor("ElementBackground", "#a78bfa", 1/10),
     ElementTitle = Color3.fromHex("#e2e8f0"),
     ElementDesc = Color3.fromHex("#a78bfa"),
     ElementIcon = Color3.fromHex("#a78bfa"),
