@@ -1,6 +1,6 @@
 local Theme = {}
 
-Theme.Night = Wind:AddTheme({
+Theme.Night = ({
     Name = "nightfall-default-theme",
 
     Primary = Color3.fromHex("#a78bfa"),
