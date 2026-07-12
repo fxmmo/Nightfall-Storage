@@ -1,10 +1,7 @@
-local Dev = loadstring(game:HttpGet("https://raw.githubusercontent.com/fxmmo/Nightfall-Storage/refs/heads/main/utils/modules/dev.lua"))()
-local Wind = Dev:Require("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua")
-
 local Theme = {}
 
 function Theme:Get()
-  return Wind:AddTheme({
+  return {
     Name = "nightfall-default-theme",
 
     Primary = Color3.fromHex("#a78bfa"),
@@ -114,7 +111,7 @@ function Theme:Get()
 
     LabelBackground = Color3.fromHex("#1a1040"),
     LabelBackgroundTransparency = .90,
-  })
+  }
 end
 
 return Theme
