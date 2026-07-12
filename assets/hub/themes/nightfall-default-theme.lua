@@ -1,6 +1,7 @@
 local Theme = {}
 
-Theme.Night = {
+function Theme:Get()
+  return Wind:AddTheme({
     Name = "nightfall-default-theme",
 
     Primary = Color3.fromHex("#a78bfa"),
@@ -110,6 +111,7 @@ Theme.Night = {
 
     LabelBackground = Color3.fromHex("#1a1040"),
     LabelBackgroundTransparency = .90,
-}
+  })
+end
 
 return Theme
