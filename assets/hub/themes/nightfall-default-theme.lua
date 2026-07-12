@@ -1,3 +1,6 @@
+local Dev = loadstring(game:HttpGet("https://raw.githubusercontent.com/fxmmo/Nightfall-Storage/refs/heads/main/utils/modules/dev.lua"))()
+local Wind = Dev:Require("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua")
+
 local Theme = {}
 
 function Theme:Get()
