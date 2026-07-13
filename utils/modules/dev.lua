@@ -37,7 +37,7 @@ function Dev:Save(x)
   end
   
   if not isfolder(path) and not isfile(full_path) then
-    self:New({
+    self:Int({
         Path = path
     })
     return true
@@ -111,7 +111,7 @@ function Dev:GetImage(image)
   end
 
   if not isfolder(path) then
-    Dev:New({Path = path})
+    self:Int({Path = path})
   end
 
   local ok, result = pcall(function()
@@ -140,7 +140,7 @@ function Dev:GetVideo(video)
   end
 
   if not isfolder(path) then
-    Dev:Int({Paths = {{Path = path}}})
+    self:Int({Paths = {{Path = path}}})
   end
 
   local ok, result = pcall(function()
