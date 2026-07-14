@@ -4,24 +4,16 @@ local _cache = {}
 local Dev = {}
 
 function Dev:Int(file_configs)
-  local paths = file_configs.Paths
+  local path = file_configs.Path
   
   if not (isfolder and makefolder) then
     return false
   end
 
-  for _, item in ipairs(paths) do
-    local parts = item.Path:split("/")
-    local current = ""
-    
-    for _, part in ipairs(parts) do
-      current = current == "" and part or (current .. "/" .. part)
-      if not isfolder(current) then
-        makefolder(current)
-      end
-    end
+  if not isfolder(path) then 
+    makefolder(path)
   end
-
+    
   return true
 end
 
@@ -38,9 +30,8 @@ function Dev:Save(x)
   
   if not isfolder(path) and not isfile(full_path) then
     self:Int({
-        Paths = path
+        Path = path
     })
-    return true
   end
   
   local dds 
@@ -111,7 +102,7 @@ function Dev:GetImage(image)
   end
 
   if not isfolder(path) then
-    self:Int({Paths = path})
+    self:Int({Path = path})
   end
 
   local ok, result = pcall(function()
@@ -140,7 +131,7 @@ function Dev:GetVideo(video)
   end
 
   if not isfolder(path) then
-    self:Int({Paths = {{Path = path}}})
+    self:Int({Path = path})
   end
 
   local ok, result = pcall(function()
