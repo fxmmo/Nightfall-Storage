@@ -5,7 +5,6 @@ local Dev = {}
 
 function Dev:Init(file_configs)
   local path = file_configs.Path
-  
   if not (isfolder and makefolder) then
     return false
   end
@@ -13,7 +12,7 @@ function Dev:Init(file_configs)
   if not isfolder(path) then 
     makefolder(path)
   end
-    
+  
   return true
 end
 
@@ -120,10 +119,10 @@ function Dev:GetImage(image)
   return url
 end
 
-function Dev:GetVideo(video)
-  local name = video.Name or "video.mp4"
-  local path = video.Path or "Nightfall/assets"
-  local url = video.Url
+function Dev:GetVideo(obj)
+  local name = obj.Name or "video.mp4"
+  local path = obj.Path or "Nightfall/assets"
+  local url = obj.Url
   local full_path = `{path}/{name}`
 
   if not (isfolder and isfile and writefile and getcustomasset) then
