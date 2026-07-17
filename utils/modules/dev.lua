@@ -3,8 +3,8 @@ local _cache = {}
 
 local Dev = {}
 
-function Dev:Init(file_configs)
-  local path = file_configs.Path
+function Dev:Init(z)
+  local path = z.Path
   if not (isfolder and makefolder) then
     return false
   end
@@ -20,7 +20,6 @@ function Dev:Save(x)
   local name = x.Name 
   local path = x.Path
   local data = x.Data 
-
   local full_path = `{path}/{name}`
 
   if not (isfolder and isfile and writefile) then
