@@ -154,4 +154,7 @@ function Dev:GetVideo(obj)
   return url
 end
 
+function Dev:Date()
+end
+
 return Dev
