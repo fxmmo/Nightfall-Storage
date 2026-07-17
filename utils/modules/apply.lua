@@ -1,19 +1,5 @@
 local highlights_group = {}
 
-local function add(obj, props)
-    for key, value in pairs(props) do
-        obj[key] = value
-    end
-    return obj
-end
-
-local function create(class, props)
-    local obj = Drawing.new(class)
-    apply(obj, defaults[class] or {})
-    apply(obj, props or {})
-    return obj
-end
-
 local Apply = {}
 
 function Apply:Highlight(obj)
