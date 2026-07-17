@@ -3,7 +3,7 @@ local _cache = {}
 
 local Dev = {}
 
-function Dev:Int(file_configs)
+function Dev:Init(file_configs)
   local path = file_configs.Path
   
   if not (isfolder and makefolder) then
@@ -29,7 +29,7 @@ function Dev:Save(x)
   end
   
   if not isfolder(path) and not isfile(full_path) then
-    self:Int({
+    self:Init({
         Path = path
     })
   end
@@ -102,7 +102,7 @@ function Dev:GetImage(image)
   end
 
   if not isfolder(path) then
-    self:Int({Path = path})
+    self:Init({Path = path})
   end
 
   local ok, result = pcall(function()
@@ -131,7 +131,7 @@ function Dev:GetVideo(video)
   end
 
   if not isfolder(path) then
-    self:Int({Path = path})
+    self:Init({Path = path})
   end
 
   local ok, result = pcall(function()
