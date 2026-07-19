@@ -68,7 +68,7 @@ function Dev:Load(y)
   end
 end
 
-function Dev:Require(url)
+function Dev:Import(url)
   if _cache[url] then 
     return _cache[url]
   end
@@ -155,6 +155,7 @@ function Dev:GetVideo(obj)
 end
 
 function Dev:Date()
+  
 end
 
 return Dev
