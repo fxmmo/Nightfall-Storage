@@ -155,7 +155,6 @@ function Dev:GetVideo(obj)
 end
 
 function Dev:Date()
-  
 end
 
 return Dev
