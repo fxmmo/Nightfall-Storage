@@ -154,4 +154,17 @@ function Dev:GetVideo(obj)
   return url
 end
 
+function Dev:Clock()
+  local time = DateTime.now():ToLocalTime()
+  local hour = time.Hour 
+  local min = time.Minute
+
+  if hour >= 4 and min >= 59 and hour <= 11 and min <= 59 then
+    return "Good Morning"
+  elseif hour >= 12 and hour <= 17 and min <= 59 then 
+    return "Good Afternoon"
+  elseif hour >= 17 and min >= 59 and hour <= 4 and min <= 59 then 
+    return "Good Night"
+  end
+
 return Dev
