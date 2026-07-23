@@ -159,11 +159,11 @@ function Dev:Clock()
     local hour = time.Hour
 
     if hour >= 5 and hour < 12 then
-        return "Good Morning"
+        return "Good morning"
     elseif hour >= 12 and hour < 18 then
-        return "Good Afternoon"
+        return "Good afternoon"
     else
-        return "Good Night"
+        return "Good night"
     end
 end
 
