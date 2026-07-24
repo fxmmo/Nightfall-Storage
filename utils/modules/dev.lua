@@ -165,7 +165,7 @@ function Dev:Clock()
     elseif hour >= 12 and hour < 18 then
         return "Good afternoon"
     else
-        return "Good night"
+        return "Good evening"
     end
 end
 
