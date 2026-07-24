@@ -107,6 +107,7 @@ function Dev:GetImage(image)
     if not isfile(full_path) then
       local data = game:HttpGet(url)
        writefile(full_path, data)
+        task.wait(.2)
     end
       
       return getcustomasset(full_path)
