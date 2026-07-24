@@ -106,9 +106,9 @@ function Dev:GetImage(image)
   local ok, result = pcall(function()
     if not isfile(full_path) then
       local data = game:HttpGet(url)
-      writefile(full_path, data)
+       writefile(full_path, data)
+        return getcustomasset(full_path)
     end
-    return getcustomasset(full_path)
   end)
 
   if ok and result then
