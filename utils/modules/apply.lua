@@ -28,7 +28,7 @@ function Apply:Highlight(obj)
 
     h.FillColor = color
     h.OutlineColor = color
-    h.FillTransparency = obj.transparency
+    h.FillTransparency = obj.Transparency
     h.OutlineTransparency = 0
     h.Enabled = true
     h.Adornee = target
