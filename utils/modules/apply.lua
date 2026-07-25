@@ -1,5 +1,7 @@
 local highlights_group = {}
 
+local Apply = {}
+
 function Apply:Highlight(obj)
   local name = obj.Name or "Highlight"
   local color = obj.Color or Color3.fromRGB(12,243,236)
