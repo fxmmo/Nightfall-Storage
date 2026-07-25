@@ -1,17 +1,19 @@
 local highlights_group = {}
 
-local Apply = {}
-
 function Apply:Highlight(obj)
   local name = obj.Name or "Highlight"
   local color = obj.Color or Color3.fromRGB(12,243,236)
   local target = obj.Target
   local group = obj.Group
 
-  local transparency = obj.Transparency
+  local transparency = obj.Transparency or 0.9
 
   if not (target and group) then
     return false
+  end
+
+  if not highlights_group[group] then
+    highlights_group[group] = {}
   end
 
   local h = target:FindFirstChild(name)
