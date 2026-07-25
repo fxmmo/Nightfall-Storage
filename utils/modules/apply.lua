@@ -47,3 +47,5 @@ function Apply:ClearHighlight(group)
         reg[i] = nil
     end
 end
+
+return Apply
