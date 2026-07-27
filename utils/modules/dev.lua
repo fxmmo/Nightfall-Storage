@@ -184,7 +184,7 @@ Dev.Visual = {
         h = Instance.new("Highlight")
         h.Name = name 
         h.Parent = target 
-        table.insert(_highlights, h)
+        table.insert(_highlights[group], h)
       end
 
       h.FillColor = color 
