@@ -178,6 +178,10 @@ Dev.Visual = {
       local target = obj.Target 
       local group = obj.Group 
 
+      if not _highlights[group] then 
+        _highlights[group] = {}
+      end
+      
       local h = _highlights[group] or target:FindFirstChild(name)
 
       if not h then 
