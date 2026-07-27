@@ -192,6 +192,7 @@ Dev.Visual = {
       h.FillTransparency = obj.Transparency or 0.8
       h.OutlineTransparency = 0 
       h.Adornee = target 
+      h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
       h.Enabled = true
       return h
     end
