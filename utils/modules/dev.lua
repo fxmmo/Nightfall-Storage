@@ -182,7 +182,7 @@ Dev.Visual = {
         _highlights[group] = {}
       end
       
-      local h = _highlights[group] or target:FindFirstChild(name)
+      local h = target:FindFirstChild(name)
 
       if not h then 
         h = Instance.new("Highlight")
