@@ -178,7 +178,7 @@ Dev.Visual = {
       local target = obj.Target 
       local group = obj.Group 
 
-      local h = _highlights["group"] or target:FindFirstChild(name)
+      local h = _highlights[group] or target:FindFirstChild(name)
 
       if not h then 
         h = Instance.new("Highlight")
