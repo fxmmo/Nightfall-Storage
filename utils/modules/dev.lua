@@ -1,5 +1,6 @@
 local http = game:GetService("HttpService")
 local _cache = {}
+local _highlights = {}
 
 local Dev = {}
 
@@ -169,4 +170,31 @@ function Dev:Clock()
     end
 end
 
+Dev.Visual = {
+  Apply = {
+    Highlight = function(obj)
+      local name = obj.Name 
+      local color = obj.Color 
+      local target = obj.Target 
+      local group = obj.Group 
+
+      local h = _highlights["group"] or target:FindFirstChild(name)
+
+      if not h then 
+        h = Instance.new("Highlight")
+        h.Name = name 
+        h.Parent = target 
+        table.insert(_highlights, h)
+      end
+
+      h.FillColor = color 
+      h.OutlineColor = color 
+      h.FillTransparency = obj.Transparency or 0.8
+      h.OutlineTransparency = 0 
+      h.Adornee = target 
+      h.Enabled = true
+      return h
+    end
+  },
+}
 return Dev
