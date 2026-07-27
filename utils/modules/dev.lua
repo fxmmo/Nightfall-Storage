@@ -197,5 +197,22 @@ Dev.Visual = {
       return h
     end
   },
+  Clear = {
+    Highlight = function(group)
+      local reg = _highlights[group]
+      if not reg then 
+        return 
+      end
+
+      for _, h in ipairs(reg) do 
+        if h then 
+          h:Destroy()
+        end
+      end
+      
+      table.clear(reg) 
+    end
+  }
 }
+
 return Dev
