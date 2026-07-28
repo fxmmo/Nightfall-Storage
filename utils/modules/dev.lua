@@ -209,7 +209,7 @@ Dev.Visual = {
       end
 
       for _, h in ipairs(reg) do 
-        if h then 
+        if h and h.Parent then 
           h:Destroy()
         end
       end
