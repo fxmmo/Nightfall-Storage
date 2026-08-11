@@ -83,6 +83,11 @@ function Dev:Import(url)
     return result 
   end
 
+  if not ok then 
+    warn(`Erro: {result}`)
+    return nil 
+  end
+
   return nil
 end
 
