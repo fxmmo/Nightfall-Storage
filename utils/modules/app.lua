@@ -28,10 +28,8 @@ function app:Import(src: string, path: string, name: string)
 
   local fullpath = `{path}/{name}`
   if isfile(fullpath) then 
-    print("Retornando do arquivo")
     return loadstring(readfile(fullpath))()
   elseif _cache[src] then 
-    print("Retornando do cache")
     return _cache[src]
   end
 
@@ -48,7 +46,6 @@ function app:Import(src: string, path: string, name: string)
       
       if not isfile(fullpath) then 
         writefile(fullpath, tostring(data))
-        print("Criando arquivo!")
       end
     end
   else
