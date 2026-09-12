@@ -18,6 +18,7 @@ function app:MakeDir(paths)
     if isfolder and makefolder then 
       if not isfolder(path) then
         makefolder(path)
+        return path 
       end 
     end 
   end 
