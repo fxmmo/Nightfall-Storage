@@ -22,7 +22,7 @@ function app:MakeDir(paths)
 end
 
 function app:Import(src: string, path: string, name: string)
-  if not isfile and writefile then 
+  if not (isfile and writefile) then 
     return false
   end
 
@@ -39,7 +39,7 @@ function app:Import(src: string, path: string, name: string)
 
   if ok and res then 
     local data = res 
-    _cache = data
+    _cache[src] = data
     
     if path then 
       self:MakeDir({path})
