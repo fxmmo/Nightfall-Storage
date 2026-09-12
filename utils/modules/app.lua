@@ -13,7 +13,7 @@ local function log(...)
   return false
 end
 
-function app:Logs()
+function app:log()
   return _logs
 end
 
@@ -25,6 +25,7 @@ function app:MakeDir(paths)
         return path 
       end 
     end 
+    
   end 
 end
 
