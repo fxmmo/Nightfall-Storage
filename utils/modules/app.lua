@@ -22,7 +22,7 @@ function app:MakeDir(paths)
 end
 
 function app:Import(src: string, path: string, name: string)
-  if not (isfile and writefile) then 
+  if not (isfile and writefile and readfile) then 
     return false
   end
 
@@ -46,6 +46,7 @@ function app:Import(src: string, path: string, name: string)
       
       if not isfile(fullpath) then 
         writefile(fullpath, tostring(data))
+        return loadstring(data)()
       end
     end
   else
