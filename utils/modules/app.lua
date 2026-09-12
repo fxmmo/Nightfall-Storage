@@ -17,10 +17,6 @@ function app:Logs()
   return _logs
 end
 
-function app:Cache()
-  return _cache 
-end
-
 function app:MakeDir(paths)
   for _, path in paths do 
     if isfolder and makefolder then 
