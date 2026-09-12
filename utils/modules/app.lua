@@ -9,7 +9,7 @@ local function log(...)
   for i = 1, msg.n do 
     table.insert(_logs, `[Debug]: {msg[i]}`)
   end
-
+  
   return false
 end
 
