@@ -52,3 +52,5 @@ function app:Import(src: string, path: string, name: string)
     log("Error while attempting to download", res)
   end
 end
+
+return app
