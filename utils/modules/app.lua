@@ -3,7 +3,7 @@ service.__index = service
 
 setmetatable(service, {
     __call = function(self, name: string)
-      return service.new(name)
+      return self.new(name)
     end
 })
   
