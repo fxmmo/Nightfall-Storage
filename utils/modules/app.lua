@@ -6,9 +6,15 @@ service.__call = function(self, name: string)
 end
   
 function service.new(name: string)
+  if isfolder and makefolder then 
+    if not isfolder(name) then 
+      makefolder(name)
+    end
+  end
+  
   local self = setmetatable({}, service)
   self.Name = name 
-  self.Folder = (makefolder and makefolder(name))
+  self.Folder = name 
   self.Children = {}
 
   return self 
