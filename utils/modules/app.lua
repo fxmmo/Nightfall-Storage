@@ -1,6 +1,5 @@
 --!strict
 local app = {}
-
 local _cache = {}
 
 local function log(...)
