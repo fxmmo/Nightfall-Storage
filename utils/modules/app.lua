@@ -2,19 +2,14 @@
 local app = {}
 
 local _cache = {}
-local _logs = {}
 
 local function log(...)
   local msg = table.pack(...)
   for i = 1, msg.n do 
-    table.insert(_logs, `[Debug]: {msg[i]}`)
+    warn(`[Debug]: {msg[i]}`)
   end
   
   return false
-end
-
-function app:log()
-  return _logs
 end
 
 function app:MakeDir(paths)
