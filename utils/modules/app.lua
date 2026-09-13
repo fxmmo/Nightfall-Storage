@@ -1,9 +1,11 @@
 local service = {}
 service.__index = service
 
-service.__call = function(self, name: string)
-  return self.new(name)
-end
+setmetatable(service, {
+    __call = function(self, name: string)
+      return service.new(name)
+    end
+})
   
 function service.new(name: string)
   if isfolder and makefolder then 
