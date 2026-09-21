@@ -22,8 +22,8 @@ function service.new(name: string)
   return self 
 end
 
-function service:Mkchild(name: string)
-  local fullpath = `{self.Folder}/{name}`
+function service:Mkchild(parent: string, name: string)
+  local fullpath = `{parent}/{name}`
   
   if isfolder and makefolder then 
     if not isfolder(fullpath) then 
@@ -70,14 +70,14 @@ function service:Wrfile(parent: string, name: string, content: string)
 
   if isfile and writefile then 
     if not isfile(fullpath) then 
-      writefile(fullpath, content or "")
+      writefile(fullpath, content)
     end
   end
 
   local file = {}
   file.Name = name
   file.Parent = parent
-  file.Source = content or ""
+  file.Source = readfile(fullpath)
 
   return file 
 end
