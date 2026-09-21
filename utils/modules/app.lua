@@ -1,5 +1,25 @@
 local service = {}
-service.__index = service
+service.__index = function(self, key)
+  if rawget(service, key) then 
+    return rawget(service, key)
+  end
+
+  local rawValue = rawget(self, key)
+  if rawValue ~= nil then 
+    return rawValue 
+  end
+
+  local children = rawget(self, "Children")
+  if children then 
+    for _, child in ipairs(children) do 
+      if child.Name == key then 
+        return child 
+      end
+    end
+  end
+
+  return
+end
 
 setmetatable(service, {
     __call = function(self, name: string)
