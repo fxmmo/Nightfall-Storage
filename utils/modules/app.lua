@@ -6,7 +6,7 @@ setmetatable(service, {
       return self.new(name)
     end
 })
-  
+
 function service.new(name: string)
   local self = setmetatable({}, service)
   self.Name = name 
@@ -18,13 +18,13 @@ function service.new(name: string)
       makefolder(name)
     end
   end
-  
+
   return self 
 end
 
-function service:Mkchild(parent: string, name: string)
-  local fullpath = `{parent}/{name}`
-  
+function service:Mkchild(name: string)
+  local fullpath = `{self.Folder}/{name}`
+
   if isfolder and makefolder then 
     if not isfolder(fullpath) then 
       makefolder(fullpath)
@@ -48,16 +48,20 @@ function service:Mkdir(paths: {string})
 
     for _, part in ipairs(parts) do 
       if part ~= "" then 
-        local exists = false 
-        for _, child in ipairs(current.Children) do 
-          if child.Name == part then 
-            current = child 
-            exists = true 
-            break
+        local foundChild = nil 
+
+        if current.Children then 
+          for _, child in ipairs(current.Children) do 
+            if child.Name == part then 
+              foundChild = child 
+              break 
+            end
           end
         end
 
-        if not exists then 
+        if foundChild then 
+          current = foundChild 
+        else
           current = current:Mkchild(part)
         end
       end
@@ -70,14 +74,14 @@ function service:Wrfile(parent: string, name: string, content: string)
 
   if isfile and writefile then 
     if not isfile(fullpath) then 
-      writefile(fullpath, content)
+      writefile(fullpath, content or "")
     end
   end
 
   local file = {}
   file.Name = name
   file.Parent = parent
-  file.Source = readfile(fullpath)
+  file.Source = content or ""
 
   return file 
 end
