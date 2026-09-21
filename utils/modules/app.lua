@@ -8,22 +8,23 @@ setmetatable(service, {
 })
   
 function service.new(name: string)
+  local self = setmetatable({}, service)
+  self.Name = name 
+  self.Folder = name
+  self.Children = {}
+
   if isfolder and makefolder then 
     if not isfolder(name) then 
       makefolder(name)
     end
   end
   
-  local self = setmetatable({}, service)
-  self.Name = name 
-  self.Folder = name 
-  self.Children = {}
-
   return self 
 end
 
 function service:Mkchild(name: string)
   local fullpath = `{self.Folder}/{name}`
+  
   if isfolder and makefolder then 
     if not isfolder(fullpath) then 
       makefolder(fullpath)
@@ -32,6 +33,7 @@ function service:Mkchild(name: string)
 
   local child = setmetatable({}, service)
   child.Name = name 
+  child.Parent = parent
   child.Folder = fullpath
   child.Children = {}
 
@@ -39,17 +41,45 @@ function service:Mkchild(name: string)
   return child
 end
 
-function service:Mkdir(paths)
-  for _, path in ipairs(paths) do
-    local fullpath = `{self.Folder}/{path}`
-    local child = string.split(fullpath, "/")
-    local part_path = ""
-      
-    for i, part in ipairs(child) do 
-        part_path = `{part_path}{(i > 1 and "/" or "")}{part}`
-        self:Mkchild(part_path)
+function service:Mkdir(paths: {string})
+  for _, path in ipairs(paths) do 
+    local parts = string.split(path, "/")
+    local current = self 
+
+    for _, part in ipairs(parts) do 
+      if part ~= "" then 
+        local exists = false 
+        for _, child in ipairs(current.Children) do 
+          if child.Name == part then 
+            current = child 
+            exists = true 
+            break
+          end
+        end
+
+        if not exists then 
+          current = current:Mkchild(part)
+        end
+      end
     end
   end
 end
-  
+
+function service:Wrfile(parent: string, name: string, content: string)
+  local fullpath = `{parent}/{name}`
+
+  if isfile and writefile then 
+    if not isfile(fullpath) then 
+      writefile(fullpath, content or "")
+    end
+  end
+
+  local file = {}
+  file.Name = name
+  file.Parent = parent
+  file.Source = content or ""
+
+  return file 
+end
+
 return service
