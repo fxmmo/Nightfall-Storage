@@ -53,7 +53,7 @@ function service:Mkchild(name: string)
 
   local child = setmetatable({}, service)
   child.Name = name 
-  child.Parent = parent
+  child.Parent = self
   child.Folder = fullpath
   child.Children = {}
 
@@ -89,8 +89,8 @@ function service:Mkdir(paths: {string})
   end
 end
 
-function service:Wrfile(parent: string, name: string, content: string)
-  local fullpath = `{parent}/{name}`
+function service:Wrfile(name: string, content: string)
+  local fullpath = `{self.Folder}/{name}`
 
   if isfile and writefile then 
     if not isfile(fullpath) then 
@@ -100,10 +100,60 @@ function service:Wrfile(parent: string, name: string, content: string)
 
   local file = {}
   file.Name = name
-  file.Parent = parent
+  file.Parent = self
   file.Source = content or ""
 
+  table.insert(self.Children, file)
   return file 
 end
-
+  
 return service
+
+function import(path, url: string?, name: string?)
+  if not path and url then 
+    return loadstring(game:HttpGet(url))()
+  end
+  
+  local current = nil
+  
+  if type(path) == "string" then 
+    local parts = string.split(path, "/")
+    current = service
+    
+    for _, part in ipairs(parts) do 
+      current = current[part]
+      if not current then return end 
+    end
+  else
+    current = path
+  end
+
+  if path and path.Source then 
+    return path.Source
+  elseif current.Source then 
+    return current.Source 
+  end
+  
+  if name and current.Children then 
+    for _, child in ipairs(current.Children) do
+      if child.Name == name and child.Source then
+        return child.Source
+      end
+    end
+  end
+        
+  if url and name then 
+    local ok, res = pcall(function()
+        return game:HttpGet(url)
+      end)
+
+    if ok and res then 
+      local file = current:Wrfile(name, res)
+      return file.Source
+    else 
+      return 
+    end
+  end 
+
+  return current
+end
