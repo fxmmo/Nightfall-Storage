@@ -106,54 +106,55 @@ function service:Wrfile(name: string, content: string)
   table.insert(self.Children, file)
   return file 
 end
-  
-return service
 
-function import(path, url: string?, name: string?)
-  if not path and url then 
-    return loadstring(game:HttpGet(url))()
+getgenv().import = function(path, url: string?, name: string?)
+  if type(path) == "string" and (path:sub(1, 4) == "http") then 
+    local content = game:HttpGet(path)
+    local func = loadstring(content)
+    return func and func()
   end
-  
-  local current = nil
-  
+
+  local current = nil 
+
   if type(path) == "string" then 
     local parts = string.split(path, "/")
     current = service
-    
+
     for _, part in ipairs(parts) do 
       current = current[part]
-      if not current then return end 
+      if not current then return end
     end
   else
-    current = path
+    current = path 
   end
 
-  if path and path.Source then 
-    return path.Source
-  elseif current.Source then 
-    return current.Source 
+  if current and current.Source then 
+    local func = loadstring(current.Source)
+    return func and func()
   end
-  
-  if name and current.Children then 
-    for _, child in ipairs(current.Children) do
+
+  if name and current and current.Children then 
+    for _, child in ipairs(current.Children) do 
       if child.Name == name and child.Source then
-        return child.Source
+        local func = loadstring(child.Source)
+        return func and func()
       end
     end
   end
-        
-  if url and name then 
+
+  if url and name and current then 
     local ok, res = pcall(function()
-        return game:HttpGet(url)
+      return game:HttpGet(url)
       end)
 
-    if ok and res then 
+    if ok and res then
       local file = current:Wrfile(name, res)
-      return file.Source
-    else 
-      return 
+      local func = loadstring(file.Source)
+      return func and func()
     end
-  end 
+  end
 
   return current
 end
+
+return service
