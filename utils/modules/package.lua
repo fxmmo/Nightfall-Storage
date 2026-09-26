@@ -112,7 +112,7 @@ return {
   Name = "Nightfall",
   Author = "Jogoroblx",
   Icon = "",
-  Theme = theme-configs,
+  Theme = "nightfall-theme",
   HideSearchBar = false,
   NewElements = true,
   OpenButton = true,
