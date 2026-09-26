@@ -1,4 +1,4 @@
-local theme-configs = {
+local theme-comfigs = wind:AddTheme{
   Name = "nightfall-theme",
 
   Primary = Color3.fromHex("#a78bfa"),
