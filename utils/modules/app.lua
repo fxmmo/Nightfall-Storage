@@ -110,7 +110,7 @@ end
 getgenv().import = function(path, url: string?, name: string?)
   local current = nil 
 
-  if type(path) == "string" then 
+  if type(path) == "string" and path ~= "" then 
     local parts = string.split(path, "/")
     current = service
 
