@@ -108,12 +108,6 @@ function service:Wrfile(name: string, content: string)
 end
 
 getgenv().import = function(path, url: string?, name: string?)
-  if type(path) == "string" and (path:sub(1, 4) == "http") then 
-    local content = game:HttpGet(path)
-    local func = loadstring(content)
-    return func and func()
-  end
-
   local current = nil 
 
   if type(path) == "string" then 
@@ -132,16 +126,7 @@ getgenv().import = function(path, url: string?, name: string?)
     local func = loadstring(current.Source)
     return func and func()
   end
-
-  if name and current and current.Children then 
-    for _, child in ipairs(current.Children) do 
-      if child.Name == name and child.Source then
-        local func = loadstring(child.Source)
-        return func and func()
-      end
-    end
-  end
-
+  
   if url and name and current then 
     local ok, res = pcall(function()
       return game:HttpGet(url)
@@ -154,6 +139,21 @@ getgenv().import = function(path, url: string?, name: string?)
     end
   end
 
+  if name and current and current.Children then 
+    for _, child in ipairs(current.Children) do 
+      if child.Name == name and child.Source then
+        local func = loadstring(child.Source)
+        return func and func()
+      end
+    end
+  end
+  
+  if type(path) == "string" and (path:sub(1, 4) == "http") then 
+    local content = game:HttpGet(path)
+    local func = loadstring(content)
+    return func and func()
+  end
+  
   return current
 end
 
