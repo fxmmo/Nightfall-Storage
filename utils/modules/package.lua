@@ -1,4 +1,4 @@
-local theme-comfigs = wind:AddTheme{
+local theme_configs = wind:AddTheme{
   Name = "nightfall-theme",
 
   Primary = Color3.fromHex("#a78bfa"),
@@ -112,7 +112,7 @@ return {
   Name = "Nightfall",
   Author = "Jogoroblx",
   Icon = "",
-  Theme = "nightfall-theme",
+  Theme = theme_configs,
   HideSearchBar = false,
   NewElements = true,
   OpenButton = true,
