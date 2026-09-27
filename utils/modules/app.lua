@@ -110,6 +110,12 @@ end
 getgenv().import = function(path, url: string?, name: string?)
   local current = nil 
 
+  if type(path) == "string" and (path:sub(1, 4) == "http") then 
+    local content = game:HttpGet(path)
+    local func = loadstring(content)
+    return func and func()
+  end
+  
   if type(path) == "string" and path ~= "" then 
     local parts = string.split(path, "/")
     current = service
@@ -146,12 +152,6 @@ getgenv().import = function(path, url: string?, name: string?)
         return func and func()
       end
     end
-  end
-  
-  if type(path) == "string" and (path:sub(1, 4) == "http") then 
-    local content = game:HttpGet(path)
-    local func = loadstring(content)
-    return func and func()
   end
   
   return current
