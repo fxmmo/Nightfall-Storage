@@ -121,7 +121,7 @@ return {
   Open_draggable = true,
   Open_stroke = 0,
   User = true,
-  game = function()
+  Game = function()
     local info = game:GetService("MarketPlaceService"):GetProductInfo(game.PlaceId)
     return info.Name 
   end
