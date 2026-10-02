@@ -120,5 +120,9 @@ return {
   Open_icon = "",
   Open_draggable = true,
   Open_stroke = 0,
-  User = true
+  User = true,
+  game = function()
+    local info = game:GetService("MarketPlaceService"):GetProductInfo(game.PlaceId)
+    return info.Name 
+  end
 }
