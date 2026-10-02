@@ -122,7 +122,7 @@ return {
   Open_stroke = 0,
   User = true,
   Game = function()
-    local info = game:GetService("MarketPlaceService"):GetProductInfo(game.PlaceId)
+    local info = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
     return info.Name 
   end
 }
