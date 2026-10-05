@@ -108,11 +108,6 @@ local theme_configs = {
   LabelBackgroundTransparency = .90,
 }
 
-local function game()
-  local info = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
-  return tostring(info.Name)
-end
-
 return {
   Name = "Nightfall",
   Author = "Jogoroblx",
@@ -125,6 +120,5 @@ return {
   Open_icon = "",
   Open_draggable = true,
   Open_stroke = 0,
-  User = true,
-  Game = game()
+  User = true
 }
