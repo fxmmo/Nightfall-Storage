@@ -26,6 +26,8 @@ service.__index = function(self, k)
   return 
 end
 
+local http = game:GetService("HttpService")
+
 local file = {}
 file.__index = file 
 service.file = file 
@@ -50,8 +52,6 @@ function file.add(self, content: string)
   self.Source ..= content
   return true 
 end
-
-local http = game:GetService("HttpService")
 
 function service.create(name: string)
   local self = setmetatable({}, service)
