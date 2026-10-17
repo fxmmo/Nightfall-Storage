@@ -48,7 +48,7 @@ function file:read()
   end
 end
 
-function file:add(content: string)
+function file.add(self, content: string)
   self.Source ..= content
   return true 
 end
