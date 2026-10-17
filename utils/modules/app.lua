@@ -71,7 +71,7 @@ function service.create(name: string)
   return self 
 end
 
-function service:mkchild(name: string)
+function service.mkchild(self, name: string)
   local path = `{self.Name}/{name}`
 
   local child = setmetatable({}, service)
@@ -92,7 +92,7 @@ function service:mkchild(name: string)
   return child
 end
 
-function service:wrfile(name: string, content: string?, json: boolean?)
+function service.wrfile(self, name: string, content: string?, json: boolean?)
   local path = `{self.Name}/{name}` 
   local data = content
   
@@ -131,7 +131,7 @@ function service:wrfile(name: string, content: string?, json: boolean?)
   return file
 end
 
-function service:mkdir(paths: {string?})
+function service.mkdir(self, paths: {string?})
   for _, path in ipairs(paths) do 
     local parts = string.split(path, "/")
     local crt = self
