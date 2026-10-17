@@ -1,160 +1,223 @@
 local service = {}
-service.__index = function(self, key)
-  if rawget(service, key) then 
-    return rawget(service, key)
-  end
-
-  local rawValue = rawget(self, key)
-  if rawValue ~= nil then 
-    return rawValue 
-  end
-
-  local children = rawget(self, "Children")
-  if children then 
-    for _, child in ipairs(children) do 
-      if child.Name == key then 
-        return child 
-      end
-    end
-  end
-
-  return
-end
-
 setmetatable(service, {
     __call = function(self, name: string)
-      return self.new(name)
+      return self.create(name)
     end
 })
+service.__index = function(self, k)
+  if rawget(service, k) then 
+    return rawget(service, k)
+  end 
 
-function service.new(name: string)
+  local _raw = rawget(self, k)
+  if _raw ~= nil then 
+    return _raw 
+  end
+
+  local cdn = rawget(self, "Children")
+  if cdn then 
+    for _, cd in ipairs(cdn) do 
+      if cd.Name = k then 
+        return cd 
+      end 
+    end 
+  end 
+  
+  return 
+end
+
+local http = game:GetService("HttpService")
+
+function service.create(name: string)
   local self = setmetatable({}, service)
-  self.Name = name 
-  self.Folder = name
+  self.Name = name
+  self.Type = "Folder"
+  self.Parent = "workspace"
   self.Children = {}
 
   if isfolder and makefolder then 
-    if not isfolder(name) then 
+    if not isfolder(name) then
       makefolder(name)
     end
+  else
+    return false
   end
 
   return self 
 end
 
-function service:Mkchild(name: string)
-  local fullpath = `{self.Folder}/{name}`
-
-  if isfolder and makefolder then 
-    if not isfolder(fullpath) then 
-      makefolder(fullpath)
-    end
-  end
+function service.mkchild(self, name: string)
+  local path = `{self.Name}/{name}`
 
   local child = setmetatable({}, service)
-  child.Name = name 
-  child.Parent = self
-  child.Folder = fullpath
+  child.Name = name
+  child.Type = "Folder"
+  child.Parent = self 
   child.Children = {}
+  
+  if isfolder and makefolder then 
+    if not isfolder(path) then
+      makefolder(path)
+    end
+  else 
+    return false 
+  end
 
   table.insert(self.Children, child)
   return child
 end
 
-function service:Mkdir(paths: {string})
+function service.wrfile(self, name: string, content: string?, json: boolean?)
+  local path = `{self.Name}/{name}` 
+  local data = content
+  
+  if writefile then 
+    if json then 
+      local ok, res = pcall(function()
+        return http:JSONEncode(data)
+        end)
+
+      if ok and res then
+        data = res
+      else
+        return false, "failed to encode"
+      end
+    end
+
+    writefile(path, data)
+  end
+
+  for _, c in ipairs(self.Children) do 
+    if c.Name == name and c.Type == "File" then 
+      c.Source = data
+      c.Encode = json
+      return true, "file already exists"
+    end
+  end
+
+  local file = setmetatable({}, file)
+  file.Name = name
+  file.Type = "File"
+  file.Parent = self
+  file.Source = data or ""
+  file.Encode = json or false
+
+  table.insert(self.Children, file)
+  return file
+end
+
+function service.mkdir(self, paths: {string?})
   for _, path in ipairs(paths) do 
     local parts = string.split(path, "/")
-    local current = self 
+    local crt = self
 
     for _, part in ipairs(parts) do 
-      if part ~= "" then 
-        local foundChild = nil 
+      if part and part ~= "" then 
+        local fc = nil 
 
-        if current.Children then 
-          for _, child in ipairs(current.Children) do 
+        if crt.Type == "Folder" and crt.Children then 
+          for _, child in ipairs(crt.Children) do 
             if child.Name == part then 
-              foundChild = child 
+              fc = child 
               break 
             end
           end
+        else
+          return false, "Failed to create a child inside an object that is not a folder"
         end
 
-        if foundChild then 
-          current = foundChild 
+        if fc then
+          crt = fc 
         else
-          current = current:Mkchild(part)
+          crt = current.mkchild(part)
         end
       end
+    end 
+  end
+  return false
+end
+
+local file = {}
+file.__index = file 
+service.file = file 
+
+function file.read(self)
+  if self.Encode then 
+    local ok, res = pcall(function()
+      return http:JSONDecode(self.Source)
+      end)
+
+    if ok and res then 
+      return res 
+    else
+      return false, "failed to decode"
     end
+  else 
+    return self.Source 
   end
 end
 
-function service:Wrfile(name: string, content: string)
-  local fullpath = `{self.Folder}/{name}`
+function file.add(self, content: string)
+  self.Source ..= content
+  return true 
+end
 
-  if isfile and writefile then 
-    if not isfile(fullpath) then 
-      writefile(fullpath, content or "")
+getgenv().import = function(url: string?, path: string?, name: string?)
+  local crt = nil 
+
+  if type(url) == "string" and (url:sub(1, 4) == "http") then 
+    local content = game:HttpGet(url)
+    local ok, res = pcall(loadstring(content))
+
+    if ok and res then 
+      return res, true 
+    else
+      return false, "Failed to execute code from url"
     end
   end
 
-  local file = {}
-  file.Name = name
-  file.Parent = self
-  file.Source = content or ""
-
-  table.insert(self.Children, file)
-  return file 
-end
-
-getgenv().import = function(path, url: string?, name: string?)
-  local current = nil 
-
-  if type(path) == "string" and (path:sub(1, 4) == "http") then 
-    local content = game:HttpGet(path)
-    local func = loadstring(content)
-    return func and func()
-  end
-  
   if type(path) == "string" and path ~= "" then 
     local parts = string.split(path, "/")
-    current = service
+    crt = service 
 
-    for _, part in ipairs(parts) do 
-      current = current[part]
-      if not current then return end
-    end
+    for _, part in ipairs(parts) do
+      crt = crt[part] 
+      if not crt then return false, "The object could not be found" end
+    end 
   else
-    current = path 
+    crt = path 
   end
 
-  if current and current.Source then 
-    local func = loadstring(current.Source)
-    return func and func()
+  if crt and crt.Source then 
+    local data = crt.Source 
+    if crt.Type == "File" then 
+      data = crt.read()
+    end
+    
+    return data 
   end
-  
-  if url and name and current then 
+
+  if url and crt and name then 
     local ok, res = pcall(function()
       return game:HttpGet(url)
       end)
 
-    if ok and res then
-      local file = current:Wrfile(name, res)
-      local func = loadstring(file.Source)
-      return func and func()
+    if ok and res then 
+      local file = crt.wrfile(name, res)
+      local data = loadstring(file.Source)
+      return data and data()
     end
   end
 
-  if name and current and current.Children then 
-    for _, child in ipairs(current.Children) do 
-      if child.Name == name and child.Source then
-        local func = loadstring(child.Source)
-        return func and func()
-      end
+  if name and crt and crt.Children then 
+    for _, cd in ipairs(crt.Children) do 
+      if cd.Name == name and cd.Type == "File" and cd.Source then 
+        local data = loadstring(cd.Source)
+        return data and data()
     end
   end
-  
-  return current
+
+  return crt, "Parameters not provided"
 end
 
 return service
