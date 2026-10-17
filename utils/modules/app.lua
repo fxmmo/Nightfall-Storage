@@ -83,8 +83,8 @@ function service.mkchild(self, name: string)
   child.Children = {}
   
   if isfolder and makefolder then 
-    if not isfolder(path) then
-      makefolder(path)
+    if not isfolder(child.Path) then
+      makefolder(child.Path)
     end
   else 
     return false 
