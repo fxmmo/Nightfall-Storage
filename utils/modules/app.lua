@@ -62,8 +62,8 @@ function service.create(name: string)
   self.Children = {}
 
   if isfolder and makefolder then 
-    if not isfolder(name) then
-      makefolder(name)
+    if not isfolder(self.Path) then
+      makefolder(self.Path)
     end
   else
     return false
