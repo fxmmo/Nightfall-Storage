@@ -73,7 +73,7 @@ function service.create(name: string)
 end
 
 function service.mkchild(self, name: string)
-  local path = `{self.Name}/{name}`
+  local path = `{self.Path}/{name}`
 
   local child = setmetatable({}, service)
   child.Name = name
@@ -95,7 +95,7 @@ function service.mkchild(self, name: string)
 end
 
 function service.wrfile(self, name: string, content: string?, json: boolean?)
-  local path = `{self.Name}/{name}` 
+  local path = `{self.Path}/{name}` 
   local data = content
   
   if writefile then 
@@ -124,6 +124,7 @@ function service.wrfile(self, name: string, content: string?, json: boolean?)
 
   local file = setmetatable({}, file)
   file.Name = name
+  file.Path = path 
   file.Type = "File"
   file.Parent = self
   file.Source = data or ""
