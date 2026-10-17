@@ -32,7 +32,7 @@ function service.create(name: string)
   local self = setmetatable({}, service)
   self.Name = name
   self.Type = "Folder"
-  self.Parent = "workspace"
+  self.Parent = nil
   self.Children = {}
 
   if isfolder and makefolder then 
