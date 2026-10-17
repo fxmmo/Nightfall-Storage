@@ -17,7 +17,7 @@ service.__index = function(self, k)
   local cdn = rawget(self, "Children")
   if cdn then 
     for _, cd in ipairs(cdn) do 
-      if cd.Name = k then 
+      if cd.Name == k then 
         return cd 
       end 
     end 
