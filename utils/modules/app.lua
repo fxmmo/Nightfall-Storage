@@ -215,6 +215,7 @@ getgenv().import = function(url: string?, path: string?, name: string?)
       if cd.Name == name and cd.Type == "File" and cd.Source then 
         local data = loadstring(cd.Source)
         return data and data()
+      end
     end
   end
 
