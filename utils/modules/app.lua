@@ -71,6 +71,18 @@ function service.create(name: string)
   return self 
 end
 
+function service.getPath(self)
+  local paths = {}
+  local crt = self
+
+  while crt do
+    table.insert(paths, 1, crt.Name)
+    crt = crt.Parent
+  end
+
+  return table.concat(paths, "/")
+end
+
 function service.mkchild(self, name: string)
   local path = `{self.Name}/{name}`
 
