@@ -129,7 +129,7 @@ function service.mkdir(self, paths: {string?})
         if fc then
           crt = fc 
         else
-          crt = current.mkchild(part)
+          crt = crt.mkchild(part)
         end
       end
     end 
