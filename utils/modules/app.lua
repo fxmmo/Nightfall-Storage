@@ -168,6 +168,18 @@ end
 getgenv().import = function(url: string?, path: string?, name: string?)
   local crt = nil 
 
+  if type(path) == "string" and path ~= "" then 
+    local parts = string.split(path, "/")
+    crt = service 
+
+    for _, part in ipairs(parts) do
+      crt = crt[part] 
+      if not crt then return false, "The object could not be found" end
+    end 
+  else
+    crt = path 
+  end
+  
   if url and crt and name then 
     local ok, res = pcall(function()
       return game:HttpGet(url)
@@ -190,19 +202,7 @@ getgenv().import = function(url: string?, path: string?, name: string?)
       return false, "Failed to execute code from url"
     end
   end
-
-  if type(path) == "string" and path ~= "" then 
-    local parts = string.split(path, "/")
-    crt = service 
-
-    for _, part in ipairs(parts) do
-      crt = crt[part] 
-      if not crt then return false, "The object could not be found" end
-    end 
-  else
-    crt = path 
-  end
-
+  
   if crt and crt.Source then 
     local data = crt.Source 
     if crt.Type == "File" then 
