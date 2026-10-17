@@ -84,7 +84,7 @@ function service.getPath(self)
 end
 
 function service.mkchild(self, name: string)
-  local path = `{self.Name}/{name}`
+  local path = `{self:getPath()}/{name}`
 
   local child = setmetatable({}, service)
   child.Name = name
