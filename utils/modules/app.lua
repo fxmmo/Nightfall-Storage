@@ -166,6 +166,18 @@ end
 getgenv().import = function(url: string?, path: string?, name: string?)
   local crt = nil 
 
+  if url and crt and name then 
+    local ok, res = pcall(function()
+      return game:HttpGet(url)
+      end)
+
+    if ok and res then 
+      local file = crt.wrfile(name, res)
+      local data = loadstring(file.Source)
+      return data and data()
+    end
+  end
+
   if type(url) == "string" and (url:sub(1, 4) == "http") then 
     local content = game:HttpGet(url)
     local ok, res = pcall(loadstring(content))
@@ -196,18 +208,6 @@ getgenv().import = function(url: string?, path: string?, name: string?)
     end
     
     return data 
-  end
-
-  if url and crt and name then 
-    local ok, res = pcall(function()
-      return game:HttpGet(url)
-      end)
-
-    if ok and res then 
-      local file = crt.wrfile(name, res)
-      local data = loadstring(file.Source)
-      return data and data()
-    end
   end
 
   if name and crt and crt.Children then 
