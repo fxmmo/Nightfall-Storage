@@ -32,7 +32,7 @@ local file = {}
 file.__index = file 
 service.file = file 
 
-function file:read()
+function file.read(self)
   if self.Encode then 
     local ok, res = pcall(function()
       return http:JSONDecode(self.Source)
