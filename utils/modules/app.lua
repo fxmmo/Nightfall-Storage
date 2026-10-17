@@ -32,7 +32,7 @@ local file = {}
 file.__index = file 
 service.file = file 
 
-function file.read(self)
+function file:read()
   if self.Encode then 
     local ok, res = pcall(function()
       return http:JSONDecode(self.Source)
@@ -48,7 +48,7 @@ function file.read(self)
   end
 end
 
-function file.add(self, content: string)
+function file:add(content: string)
   self.Source ..= content
   return true 
 end
@@ -204,7 +204,7 @@ getgenv().import = function(url: string?, path: string?, name: string?)
   if crt and crt.Source then 
     local data = crt.Source 
     if crt.Type == "File" then 
-      data = crt.read()
+      data = crt:read()
     end
     
     return data 
