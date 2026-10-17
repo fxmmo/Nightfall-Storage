@@ -56,6 +56,7 @@ end
 function service.create(name: string)
   local self = setmetatable({}, service)
   self.Name = name
+  self.Path = name 
   self.Type = "Folder"
   self.Parent = nil
   self.Children = {}
