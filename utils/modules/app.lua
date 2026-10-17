@@ -77,6 +77,7 @@ function service.mkchild(self, name: string)
 
   local child = setmetatable({}, service)
   child.Name = name
+  child.Path = path 
   child.Type = "Folder"
   child.Parent = self 
   child.Children = {}
