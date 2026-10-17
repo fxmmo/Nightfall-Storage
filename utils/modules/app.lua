@@ -133,8 +133,9 @@ function service.mkdir(self, paths: {string?})
         end
       end
     end 
-  end
-  return false
+  end 
+  
+  return self
 end
 
 local file = {}
