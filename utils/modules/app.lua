@@ -187,7 +187,7 @@ getgenv().import = function(url: string?, path: string?, name: string?)
       end)
 
     if ok and res then 
-      local file = crt.wrfile(name, res)
+      local file = crt:wrfile(name, res)
       local data = loadstring(file.Source)
       return data and data()
     end
