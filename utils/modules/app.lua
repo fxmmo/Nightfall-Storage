@@ -134,16 +134,16 @@ function service.wrfile(self, name: string, content: string?, json: boolean?)
     end
   end
 
-  local file = setmetatable({}, file)
-  file.Name = name
-  file.Path = path 
-  file.Type = "File"
-  file.Parent = self
-  file.Source = data or ""
-  file.Encode = json or false
+  local newFile = setmetatable({}, file)
+  newFile.Name = name
+  newFile.Path = path 
+  newFile.Type = "File"
+  newFile.Parent = self
+  newFile.Source = data or ""
+  newFile.Encode = json or false
 
-  table.insert(self.Children, file)
-  return file
+  table.insert(self.Children, newFile)
+  return newFile
 end
 
 function service.mkdir(self, paths: {string?})
