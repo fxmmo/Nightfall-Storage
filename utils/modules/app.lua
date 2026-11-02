@@ -1,4 +1,8 @@
 local service = {}
+local file = {}
+file.__index = file 
+service.file = file 
+
 setmetatable(service, {
     __call = function(self, name: string)
       return self.create(name)
@@ -28,11 +32,14 @@ end
 
 local http = game:GetService("HttpService")
 
-local file = {}
-file.__index = file 
-service.file = file 
-
 function file.read(self)
+  if (not self.Source or self.Source == "") and isfile and isfile(self.Path) then 
+    local ok, res = pcall(readfile, self.Path)
+    if ok then 
+      self.Source = res 
+    end 
+  end 
+  
   if self.Encode then 
     local ok, res = pcall(function()
       return http:JSONDecode(self.Source)
