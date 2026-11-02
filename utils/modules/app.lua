@@ -69,7 +69,7 @@ function service.create(name: string)
   local self = setmetatable({}, service)
   self.Name = name
   self.Path = name 
-  self.Type = "Folder"
+  self.Type = "folder"
   self.Parent = nil
   self.Children = {}
 
@@ -90,7 +90,7 @@ function service.mkchild(self, name: string)
   local child = setmetatable({}, service)
   child.Name = name
   child.Path = path 
-  child.Type = "Folder"
+  child.Type = "folder"
   child.Parent = self 
   child.Children = {}
   
@@ -137,7 +137,7 @@ function service.wrfile(self, name: string, content: string?, json: boolean?)
   local newFile = setmetatable({}, file)
   newFile.Name = name
   newFile.Path = path 
-  newFile.Type = "File"
+  newFile.Type = "file"
   newFile.Parent = self
   newFile.Source = data or ""
   newFile.Encode = json or false
@@ -155,7 +155,7 @@ function service.mkdir(self, paths: {string?})
       if part and part ~= "" then 
         local fc = nil 
 
-        if crt.Type == "Folder" and crt.Children then 
+        if crt.Type == "folder" and crt.Children then 
           for _, child in ipairs(crt.Children) do 
             if child.Name == part then 
               fc = child 
@@ -218,7 +218,7 @@ getgenv().import = function(url: string?, path: string?, name: string?)
   
   if crt and crt.Source then 
     local data = crt.Source 
-    if crt.Type == "File" then 
+    if crt.Type == "file" then 
       data = crt:read()
     end
     
@@ -227,7 +227,7 @@ getgenv().import = function(url: string?, path: string?, name: string?)
 
   if name and crt and crt.Children then 
     for _, cd in ipairs(crt.Children) do 
-      if cd.Name == name and cd.Type == "File" and cd.Source then 
+      if cd.Name == name and cd.Type == "file" and cd.Source then 
         local data = loadstring(cd.Source)
         return data and data()
       end
