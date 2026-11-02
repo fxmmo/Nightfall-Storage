@@ -115,6 +115,7 @@ function service.wrfile(self, name: string, content: string?, json: boolean?)
 
       if ok and res then
         data = res
+        self.Encode = true
       else
         return false, "failed to encode"
       end
