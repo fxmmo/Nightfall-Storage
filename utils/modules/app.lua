@@ -33,6 +33,8 @@ end
 local http = game:GetService("HttpService")
 
 function file.read(self)
+  local content
+  
   if (not self.Source or self.Source == "") and isfile and isfile(self.Path) then 
     local ok, res = pcall(readfile, self.Path)
     if ok then 
@@ -46,13 +48,14 @@ function file.read(self)
       end)
 
     if ok and res then 
-      return res 
+      content = res 
     else
       return false, "failed to decode"
     end
   else 
-    return self.Source 
+    content = self.Source 
   end
+  return content
 end
 
 function file.add(self, content: string)
