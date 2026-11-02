@@ -57,7 +57,6 @@ function file.read(self)
   else 
     content = self.Source 
   end
-  print(self, self.Souce, self.Path)
   return content
 end
 
