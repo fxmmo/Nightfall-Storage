@@ -37,7 +37,10 @@ function file.read(self)
   local content
   
   if (not self.Source or self.Source == "") and isfile and isfile(self.Path) then 
-    local ok, res = pcall(readfile, self.Path)
+    local ok, res = pcall(function()
+        return readfile(self.Path)
+      end)
+    
     if ok then 
       self.Source = res 
     end 
