@@ -48,9 +48,7 @@ function file.read(self)
       end)
 
     if ok and res then 
-      content = res 
-    else
-      return false, "failed to decode"
+      content = res
     end
   else 
     content = self.Source 
