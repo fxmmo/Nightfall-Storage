@@ -1,4 +1,3 @@
---!strict
 local service = {}
 local file = {}
 file.__index = file
