@@ -1,4 +1,5 @@
 local service = {}
+service.__type = "folder"
 
 local http = game:GetService("HttpService")
 local roots = {}
@@ -6,7 +7,7 @@ local roots = {}
 setmetatable(service, {
     __call = function(_, name: string)
         return service.create(name)
-    end,
+    end
 })
 
 service.__index = function(self, k)
@@ -29,6 +30,7 @@ service.__index = function(self, k)
 end
 
 local file = {}
+file.__type = "file"
 file.__index = file
 service.file = file
 
