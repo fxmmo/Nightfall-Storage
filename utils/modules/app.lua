@@ -1,5 +1,8 @@
 local service = {}
 
+local http = game:GetService("HttpService")
+local roots = {}
+
 setmetatable(service, {
     __call = function(_, name: string)
         return service.create(name)
@@ -28,9 +31,6 @@ end
 local file = {}
 file.__index = file
 service.file = file
-
-local http = game:GetService("HttpService")
-local roots = {}
 
 local function runSource(src: string): (boolean, any)
     local fn, err = loadstring(src)
