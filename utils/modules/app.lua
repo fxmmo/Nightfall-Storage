@@ -26,7 +26,7 @@ service.__index = function(self, k)
             end
         end
     end
-    return nil
+    return
 end
 
 local file = {}
