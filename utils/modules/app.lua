@@ -1,4 +1,30 @@
 local service = {}
+
+setmetatable(service, {
+    __call = function(_, name: string)
+        return service.create(name)
+    end,
+})
+
+service.__index = function(self, k)
+    if rawget(service, k) then
+        return rawget(service, k)
+    end
+    local raw = rawget(self, k)
+    if raw ~= nil then
+        return raw
+    end
+    local children = rawget(self, "Children")
+    if children then
+        for _, child in ipairs(children) do
+            if child.Name == k then
+                return child
+            end
+        end
+    end
+    return nil
+end
+
 local file = {}
 file.__index = file
 service.file = file
@@ -36,31 +62,6 @@ local function assetFrom(node: any): (any, any)
     return res
 end
 
-setmetatable(service, {
-    __call = function(_, name: string)
-        return service.create(name)
-    end,
-})
-
-service.__index = function(self, k)
-    if rawget(service, k) then
-        return rawget(service, k)
-    end
-    local raw = rawget(self, k)
-    if raw ~= nil then
-        return raw
-    end
-    local children = rawget(self, "Children")
-    if children then
-        for _, child in ipairs(children) do
-            if child.Name == k then
-                return child
-            end
-        end
-    end
-    return nil
-end
-
 function file.read(self: any): (any, any)
     if not self then return nil, "no file" end
     if (self.Source == nil or self.Source == "") and isfile and readfile and isfile(self.Path) then
@@ -85,12 +86,14 @@ end
 function service.create(name: string): (any, any)
     if roots[name] then return roots[name] end
     if not (isfolder and makefolder) then return nil, "filesystem unsupported" end
+  
     local self = setmetatable({}, service)
     self.Name = name
     self.Path = name
     self.Type = "folder"
     self.Parent = nil
     self.Children = {}
+  
     if not isfolder(name) then makefolder(name) end
     roots[name] = self
     return self
