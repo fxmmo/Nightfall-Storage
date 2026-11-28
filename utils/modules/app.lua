@@ -1,38 +1,10 @@
 local service = {}
-service.__type = "folder"
+local file = {}
+file.__index = file
+service.file = file
 
 local http = game:GetService("HttpService")
 local roots = {}
-
-setmetatable(service, {
-    __call = function(_, name: string)
-        return service.create(name)
-    end
-})
-
-service.__index = function(self, k)
-    if rawget(service, k) then
-        return rawget(service, k)
-    end
-    local raw = rawget(self, k)
-    if raw ~= nil then
-        return raw
-    end
-    local children = rawget(self, "Children")
-    if children then
-        for _, child in ipairs(children) do
-            if child.Name == k then
-                return child
-            end
-        end
-    end
-    return
-end
-
-local file = {}
-file.__type = "file"
-file.__index = file
-service.file = file
 
 local function runSource(src: string): (boolean, any)
     local fn, err = loadstring(src)
@@ -58,10 +30,35 @@ end
 
 local function assetFrom(node: any): (any, any)
     if not getcustomasset then return nil, "getcustomasset unsupported" end
-    if typeof(node) ~= "file" then return nil, "not a file" end
+    if node.Type ~= "file" then return nil, "not a file" end
     local ok, res = pcall(getcustomasset, node.Path)
     if not ok then return nil, res end
     return res
+end
+
+setmetatable(service, {
+    __call = function(_, name: string)
+        return service.create(name)
+    end,
+})
+
+service.__index = function(self, k)
+    if rawget(service, k) then
+        return rawget(service, k)
+    end
+    local raw = rawget(self, k)
+    if raw ~= nil then
+        return raw
+    end
+    local children = rawget(self, "Children")
+    if children then
+        for _, child in ipairs(children) do
+            if child.Name == k then
+                return child
+            end
+        end
+    end
+    return nil
 end
 
 function file.read(self: any): (any, any)
@@ -71,7 +68,7 @@ function file.read(self: any): (any, any)
         if not ok then return nil, res end
         self.Source = res
     end
-    if typeof(self) ~= "file" or not self.Source then return nil, "no source" end
+    if self.Type ~= "file" or not self.Source then return nil, "no source" end
     if self.Encode then
         local ok, res = pcall(http.JSONDecode, http, self.Source)
         if not ok then return nil, res end
@@ -88,13 +85,12 @@ end
 function service.create(name: string): (any, any)
     if roots[name] then return roots[name] end
     if not (isfolder and makefolder) then return nil, "filesystem unsupported" end
-  
     local self = setmetatable({}, service)
     self.Name = name
     self.Path = name
+    self.Type = "folder"
     self.Parent = nil
     self.Children = {}
-
     if not isfolder(name) then makefolder(name) end
     roots[name] = self
     return self
@@ -106,6 +102,7 @@ function service.mkchild(self: any, name: string): (any, any)
     local child = setmetatable({}, service)
     child.Name = name
     child.Path = path
+    child.Type = "folder"
     child.Parent = self
     child.Children = {}
     if not isfolder(path) then makefolder(path) end
@@ -126,7 +123,7 @@ function service.wrfile(self: any, name: string, content: any, json: boolean?): 
         if not ok then return nil, res end
     end
     for _, c in ipairs(self.Children) do
-        if c.Name == name and typeof(c) == "file" then
+        if c.Name == name and c.Type == "file" then
             c.Source = data
             c.Encode = json or false
             return c
@@ -135,6 +132,7 @@ function service.wrfile(self: any, name: string, content: any, json: boolean?): 
     local newFile = setmetatable({}, file)
     newFile.Name = name
     newFile.Path = path
+    newFile.Type = "file"
     newFile.Parent = self
     newFile.Source = data or ""
     newFile.Encode = json or false
@@ -146,7 +144,7 @@ function service.mkdir(self: any, paths: {string}): (boolean, any)
     for _, path in ipairs(paths) do
         local node: any = self
         for part in string.gmatch(path, "[^/]+") do
-            if typeof(node) ~= "folder" then
+            if node.Type ~= "folder" then
                 return false, "parent is not a folder"
             end
             local found = nil
@@ -207,14 +205,14 @@ getgenv().import = function(url: string?, path: string?, name: string?, asset: b
         return out
     end
 
-    if crt and typeof(crt) == "file" then
+    if crt and crt.Type == "file" then
         if asset then return assetFrom(crt) end
         return crt:read()
     end
 
     if name and crt and crt.Children then
         for _, child in ipairs(crt.Children) do
-            if child.Name == name and typeof(child) == "file" then
+            if child.Name == name and child.Type == "file" then
                 if asset then return assetFrom(child) end
                 local data, err = child:read()
                 if not data then return nil, err end
