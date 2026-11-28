@@ -93,7 +93,7 @@ function service.create(name: string): (any, any)
     self.Type = "folder"
     self.Parent = nil
     self.Children = {}
-  
+
     if not isfolder(name) then makefolder(name) end
     roots[name] = self
     return self
