@@ -58,7 +58,7 @@ end
 
 local function assetFrom(node: any): (any, any)
     if not getcustomasset then return nil, "getcustomasset unsupported" end
-    if node.Type ~= "file" then return nil, "not a file" end
+    if typeof(node) ~= "file" then return nil, "not a file" end
     local ok, res = pcall(getcustomasset, node.Path)
     if not ok then return nil, res end
     return res
@@ -71,7 +71,7 @@ function file.read(self: any): (any, any)
         if not ok then return nil, res end
         self.Source = res
     end
-    if self.Type ~= "file" or not self.Source then return nil, "no source" end
+    if typeof(self) ~= "file" or not self.Source then return nil, "no source" end
     if self.Encode then
         local ok, res = pcall(http.JSONDecode, http, self.Source)
         if not ok then return nil, res end
@@ -92,7 +92,6 @@ function service.create(name: string): (any, any)
     local self = setmetatable({}, service)
     self.Name = name
     self.Path = name
-    self.Type = "folder"
     self.Parent = nil
     self.Children = {}
 
@@ -107,7 +106,6 @@ function service.mkchild(self: any, name: string): (any, any)
     local child = setmetatable({}, service)
     child.Name = name
     child.Path = path
-    child.Type = "folder"
     child.Parent = self
     child.Children = {}
     if not isfolder(path) then makefolder(path) end
@@ -128,7 +126,7 @@ function service.wrfile(self: any, name: string, content: any, json: boolean?): 
         if not ok then return nil, res end
     end
     for _, c in ipairs(self.Children) do
-        if c.Name == name and c.Type == "file" then
+        if c.Name == name and typeof(c) == "file" then
             c.Source = data
             c.Encode = json or false
             return c
@@ -137,7 +135,6 @@ function service.wrfile(self: any, name: string, content: any, json: boolean?): 
     local newFile = setmetatable({}, file)
     newFile.Name = name
     newFile.Path = path
-    newFile.Type = "file"
     newFile.Parent = self
     newFile.Source = data or ""
     newFile.Encode = json or false
@@ -149,7 +146,7 @@ function service.mkdir(self: any, paths: {string}): (boolean, any)
     for _, path in ipairs(paths) do
         local node: any = self
         for part in string.gmatch(path, "[^/]+") do
-            if node.Type ~= "folder" then
+            if typeof(node) ~= "folder" then
                 return false, "parent is not a folder"
             end
             local found = nil
@@ -210,14 +207,14 @@ getgenv().import = function(url: string?, path: string?, name: string?, asset: b
         return out
     end
 
-    if crt and crt.Type == "file" then
+    if crt and typeof(crt) == "file" then
         if asset then return assetFrom(crt) end
         return crt:read()
     end
 
     if name and crt and crt.Children then
         for _, child in ipairs(crt.Children) do
-            if child.Name == name and child.Type == "file" then
+            if child.Name == name and typeof(child) == "file" then
                 if asset then return assetFrom(child) end
                 local data, err = child:read()
                 if not data then return nil, err end
